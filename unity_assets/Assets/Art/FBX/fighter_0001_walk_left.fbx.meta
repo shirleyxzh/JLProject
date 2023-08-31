@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e2f0d05adab873b49a6a2dd18a67fac6
+guid: 7021bae91fc175942aa7632f40bee837
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -33,11 +33,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: fighter_0001_walk
+      name: fighter_0001_walk_left
       takeName: Take 001
       internalID: 1827226128182048838
       firstFrame: 0
-      lastFrame: 59
+      lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
