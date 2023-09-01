@@ -84,7 +84,7 @@ AvatarMask:
   - m_Path: root_joint/hip_joint/body_joint/arm_r_u_joint/arm_r_l_joint/hand_r_joint
     m_Weight: 1
   - m_Path: root_joint/hip_joint/body_joint/head_joint
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: root_joint/hip_joint/body_joint/head_joint/brow_l_joint
     m_Weight: 0
   - m_Path: root_joint/hip_joint/body_joint/head_joint/brow_r_joint
