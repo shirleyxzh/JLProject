@@ -1,5 +1,5 @@
 {
-    "name": "Gungeon",
+    "name": "InputCtrl",
     "maps": [
         {
             "name": "Player",
@@ -99,37 +99,15 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "Cannon",
-                    "id": "3a416e29-e7b6-4470-a7c1-474345c1de27",
-                    "path": "2DVector",
+                    "name": "",
+                    "id": "edf99d74-2639-4191-9112-66bc5178acd5",
+                    "path": "<Pointer>/position",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Keyboard&Mouse",
                     "action": "Look",
-                    "isComposite": true,
+                    "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "left",
-                    "id": "bf4d030d-eb26-464b-a38e-12346284c1f1",
-                    "path": "<Keyboard>/leftBracket",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "0be43edc-81bf-4663-9c58-d9e9eccf4c84",
-                    "path": "<Keyboard>/rightBracket",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 },
                 {
                     "name": "",

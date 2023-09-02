@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5db85a3bed0d5a44ae0dde383a12d79, type: 3}
+  m_Name: att180
+  m_EditorClassIdentifier: 
+  bulletResource: {fileID: 2434201832131880271, guid: 88c95b5a77fb1004b9502d03b8a4e044, type: 3}
+  minRotation: 0
+  maxRotation: 180
+  numberOfBullets: 8
+  isRandom: 0
+  isParent: 0
+  cooldown: 0.2
+  bulletSpeed: 5
+  bulletVelocity: {x: 1, y: 0}
