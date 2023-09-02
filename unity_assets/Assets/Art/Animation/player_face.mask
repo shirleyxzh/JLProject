@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: player_face
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: arm_l_l_geo
+    m_Weight: 0
+  - m_Path: arm_l_u_geo
+    m_Weight: 0
+  - m_Path: arm_r_l_geo
+    m_Weight: 0
+  - m_Path: arm_r_u_geo
+    m_Weight: 0
+  - m_Path: body_low_geo
+    m_Weight: 0
+  - m_Path: body_upper_geo
+    m_Weight: 0
+  - m_Path: brow_geo
+    m_Weight: 0
+  - m_Path: cheek_geo
+    m_Weight: 0
+  - m_Path: ear_geo
+    m_Weight: 0
+  - m_Path: eye_close_geo
+    m_Weight: 0
+  - m_Path: eye_normal_geo
+    m_Weight: 0
+  - m_Path: eye_spin_geo
+    m_Weight: 0
+  - m_Path: faxce_geo
+    m_Weight: 0
+  - m_Path: hair_back_geo
+    m_Weight: 0
+  - m_Path: hair_front_geo
+    m_Weight: 0
+  - m_Path: hair_mid_geo
+    m_Weight: 0
+  - m_Path: hand_l_geo
+    m_Weight: 0
+  - m_Path: hand_r_geo
+    m_Weight: 0
+  - m_Path: leg__u_geo
+    m_Weight: 0
+  - m_Path: leg_l_l_geo
+    m_Weight: 0
+  - m_Path: leg_r_l_geo
+    m_Weight: 0
+  - m_Path: leg_r_u_geo
+    m_Weight: 0
+  - m_Path: moth_happy_geo
+    m_Weight: 0
+  - m_Path: moth_open_geo
+    m_Weight: 0
+  - m_Path: mouth_o_geo
+    m_Weight: 0
+  - m_Path: mouth_sad_geo
+    m_Weight: 0
+  - m_Path: ribbin_geo2
+    m_Weight: 0
+  - m_Path: root_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint/arm_l_u_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint/arm_l_u_joint/arm_l_l_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint/arm_l_u_joint/arm_l_l_joint/hand_l_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint/arm_r_u_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint/arm_r_u_joint/arm_r_l_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint/arm_r_u_joint/arm_r_l_joint/hand_r_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint/head_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint/head_joint/brow_l_joint
+    m_Weight: 1
+  - m_Path: root_joint/hip_joint/body_joint/head_joint/brow_r_joint
+    m_Weight: 1
+  - m_Path: root_joint/hip_joint/body_joint/head_joint/cheek_l_joint
+    m_Weight: 1
+  - m_Path: root_joint/hip_joint/body_joint/head_joint/cheek_r_joint
+    m_Weight: 1
+  - m_Path: root_joint/hip_joint/body_joint/head_joint/ear_joint
+    m_Weight: 1
+  - m_Path: root_joint/hip_joint/body_joint/head_joint/eye_o_l_joint
+    m_Weight: 1
+  - m_Path: root_joint/hip_joint/body_joint/head_joint/eye_o_r_joint
+    m_Weight: 1
+  - m_Path: root_joint/hip_joint/body_joint/head_joint/hair_back_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint/head_joint/hair_front_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint/head_joint/hair_top_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/body_joint/head_joint/mouth_joint
+    m_Weight: 1
+  - m_Path: root_joint/hip_joint/body_joint/ribbon_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/leg_l_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/leg_l_joint/feet_l_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/leg_r_joint
+    m_Weight: 0
+  - m_Path: root_joint/hip_joint/leg_r_joint/feet_r_joint
+    m_Weight: 0
