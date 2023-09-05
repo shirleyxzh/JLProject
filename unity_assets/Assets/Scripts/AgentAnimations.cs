@@ -19,16 +19,21 @@ public class AgentAnimations : MonoBehaviour
     {
         if (moveTo == Vector2.zero)
         {
-            animator.Play("Base Layer.player_idle");
             animator.SetFloat("animSpeed", 1);
+            animator.Play("Base Layer.player_idle");
         }
         else
-        {
-            animator.Play("Base Layer.player_walk");
-            
+        {           
             moveDir = moveTo.x > 0 ? 1 : -1;
             var speed = moveDir == lookDir ? 1 : -1;
             animator.SetFloat("animSpeed", speed);
+            animator.Play("Base Layer.player_walk");
         }
+    }
+
+    public void PlayDead()
+    {
+        animator.SetFloat("animSpeed", 1);
+        animator.Play("Base Layer.player_death");
     }
 }

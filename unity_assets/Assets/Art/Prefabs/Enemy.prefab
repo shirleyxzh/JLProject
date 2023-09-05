@@ -88,6 +88,16 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 84b792b7991bdce48b4348f5d26c7c0f, type: 2}
+    - target: {fileID: 2479619935071902814, guid: 1f4d4efd5b1def34893fa8df30bf08fe,
+        type: 3}
+      propertyPath: WasHitByObj.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 470624536811872734}
+    - target: {fileID: 2479619935071902814, guid: 1f4d4efd5b1def34893fa8df30bf08fe,
+        type: 3}
+      propertyPath: WasHitByObj.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: EnemyAI, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 2520186256713390298, guid: 1f4d4efd5b1def34893fa8df30bf08fe,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -192,6 +202,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7786863481471763402, guid: 1f4d4efd5b1def34893fa8df30bf08fe,
+        type: 3}
+      propertyPath: StartingHP
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7786863481471763402, guid: 1f4d4efd5b1def34893fa8df30bf08fe,
+        type: 3}
+      propertyPath: CanAttackByType
+      value: Bullet
+      objectReference: {fileID: 0}
+    - target: {fileID: 7786863481471763402, guid: 1f4d4efd5b1def34893fa8df30bf08fe,
+        type: 3}
+      propertyPath: OnAttacked.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 470624536811872734}
+    - target: {fileID: 7786863481471763402, guid: 1f4d4efd5b1def34893fa8df30bf08fe,
+        type: 3}
+      propertyPath: OnAttacked.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: EnemyAI, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 8600221710571093779, guid: 1f4d4efd5b1def34893fa8df30bf08fe,
         type: 3}
@@ -323,3 +353,4 @@ MonoBehaviour:
   chaseDist: 7
   attackDist: 3
   attackDelay: 1
+  damagedBy: 

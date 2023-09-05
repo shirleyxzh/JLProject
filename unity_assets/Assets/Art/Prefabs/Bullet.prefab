@@ -174,4 +174,5 @@ MonoBehaviour:
   lifeTime: 2
   type: Bullet
   timer: 0
+  damage: 1
   scaler: 0.1

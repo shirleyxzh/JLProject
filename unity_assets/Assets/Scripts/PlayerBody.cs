@@ -1,14 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerBody : MonoBehaviour
 {
-    public Agent player;
+    private Agent player;
 
+    private void Start()
+    {
+        player = GetComponentInParent<Agent>();
+    }
     private void OnTriggerEnter(Collider other)
     {
-        //player.HitByBullet();
-        return;
+        player.HitByObject(other.gameObject);
     }
 }

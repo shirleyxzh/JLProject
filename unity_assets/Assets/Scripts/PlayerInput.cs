@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -8,6 +11,8 @@ public class PlayerInput : MonoBehaviour
 {
     public UnityEvent<Vector2> OnMovementInput, OnPointerInput;
     public UnityEvent<bool> OnAttack;
+
+    public TextMeshProUGUI hud;
 
     [SerializeField]
     private InputActionReference movement, attack, pointerPosition;
@@ -44,5 +49,10 @@ public class PlayerInput : MonoBehaviour
     private void StopAttack(InputAction.CallbackContext context)
     {
         OnAttack?.Invoke(false);
+    }
+
+    public void WasAttacked(int hits, int hp)
+    {
+        hud.text = $"Hits: {hits}\nHP: {hp}";
     }
 }

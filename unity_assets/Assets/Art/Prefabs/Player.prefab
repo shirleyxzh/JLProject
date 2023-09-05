@@ -210,6 +210,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d12163c857942e4e8d7688f89fbc15b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnAttacked:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2744520321702145000}
+        m_TargetAssemblyTypeName: PlayerInput, Assembly-CSharp
+        m_MethodName: WasAttacked
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  StartingHP: 50
+  CanAttackByType: EnemyBullet
+  AttackPoint: {fileID: 27090494832062713}
 --- !u!114 &1273144949325833300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -293,6 +311,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  hud: {fileID: 0}
   movement: {fileID: -4949811619333462019, guid: 930016ceb422760498413b8b1fd9b1e4,
     type: 3}
   attack: {fileID: -4694942515661517311, guid: 930016ceb422760498413b8b1fd9b1e4, type: 3}
@@ -786,6 +805,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2479619935071902814}
   m_SourcePrefab: {fileID: 100100000, guid: 671fa2b72ed282843b61e2ef05c5718e, type: 3}
+--- !u!4 &27090494832062713 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6502475716720234062, guid: 671fa2b72ed282843b61e2ef05c5718e,
+    type: 3}
+  m_PrefabInstance: {fileID: 6511450380377243319}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &808330397920723750 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 671fa2b72ed282843b61e2ef05c5718e,
@@ -823,8 +848,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.1, y: 0.15, z: 0.1}
-  m_Center: {x: 0, y: 0.07, z: 0}
+  m_Size: {x: 0.02, y: 0.05, z: 0.05}
+  m_Center: {x: 0, y: 0.05, z: 0}
 --- !u!54 &5839176594430119965
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -864,7 +889,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b10b5b733f705e847a66c7f102aba4ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 7786863481471763402}
 --- !u!4 &6762129424227424604 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 671fa2b72ed282843b61e2ef05c5718e,

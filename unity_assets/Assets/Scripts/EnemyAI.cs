@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,8 +9,7 @@ public class EnemyAI : MonoBehaviour
     public UnityEvent<Vector2> OnMovementInput, OnPointerInput;
     public UnityEvent<bool> OnAttack;
 
-    [SerializeField]
-    private Transform player;
+    public Agent player;
 
     [SerializeField]
     private float chaseDist = 3, attackDist = 0.8f;
@@ -17,16 +17,24 @@ public class EnemyAI : MonoBehaviour
     [SerializeField]
     private float attackDelay = 1;
     private float passedTime = 1;
+    private bool isDead = false;
 
     private void Update()
     {
-        if (player == null)
+        if (isDead)
             return;
 
-        float dist = Vector2.Distance(player.position, transform.position);
+        if (player.GetHP == 0)
+        {
+            OnAttack?.Invoke(false);
+            OnMovementInput?.Invoke(Vector2.zero);
+            return;
+        }
+
+        float dist = Vector2.Distance(player.transform.position, transform.position);
         if (dist < chaseDist)
         {
-            OnPointerInput?.Invoke(player.position);
+            OnPointerInput?.Invoke(player.AttackPoint.position);
             if (dist <= attackDist)
             {
                 // attack player
@@ -41,7 +49,7 @@ public class EnemyAI : MonoBehaviour
             {
                 // chasing player
                 OnAttack?.Invoke(false);
-                Vector2 dir = player.position - transform.position;
+                Vector2 dir = player.transform.position - transform.position;
                 OnMovementInput?.Invoke(dir.normalized);
             }
         }
@@ -52,5 +60,16 @@ public class EnemyAI : MonoBehaviour
 
         if (passedTime < attackDelay)
             passedTime += Time.deltaTime;
+    }
+
+    public void WasAttacked(int hits, int hp)
+    {
+        if (hp == 0 && !isDead)
+        {
+            isDead = true;
+            OnAttack?.Invoke(false);
+            OnMovementInput?.Invoke(Vector2.zero);
+            Destroy(gameObject, 2);
+        }
     }
 }
