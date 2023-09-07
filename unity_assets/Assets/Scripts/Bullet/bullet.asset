@@ -20,4 +20,4 @@ MonoBehaviour:
   isRandom: 0
   isParent: 0
   cooldown: 0.1
-  bulletSpeed: 8
+  bulletSpeed: 4

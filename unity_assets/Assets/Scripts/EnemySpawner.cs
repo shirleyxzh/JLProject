@@ -13,13 +13,19 @@ public class EnemySpawner : MonoBehaviour
     private GameObject EnemyPrefab;
 
     [SerializeField]
+    private int enemyMax;
+
+    [SerializeField]
+    ParticleSystem explosionParticleSystem;
+
+    [SerializeField]
     private TextMeshProUGUI hudKills;
 
     [SerializeField]
     private Vector3[] spawnPoints;
 
     private int kills;
-    private GameObject spawnedEnemy;
+    private EnemyAI spawnedEnemy;
 
     private void Start()
     {
@@ -29,18 +35,21 @@ public class EnemySpawner : MonoBehaviour
 
     private void Update()
     {
-        if (spawnedEnemy == null)
+        if (spawnedEnemy.isDead)  //<- this is calling spawn enemy.. so the emeny on screen count check should be here..?? 
         {
             kills++;
             SpawnEnemy();
         }
     }
 
-    private void SpawnEnemy()
+    private void SpawnEnemy()  
     {
-        spawnedEnemy = Instantiate(EnemyPrefab);
-        spawnedEnemy.transform.position = spawnPoints[Random.Range(0, spawnPoints.Length)];
-        spawnedEnemy.GetComponent<EnemyAI>().player = player;
+        var obj = Instantiate(EnemyPrefab);
+        obj.transform.position = spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+        spawnedEnemy = obj.GetComponent<EnemyAI>();
+        spawnedEnemy.explosionParticleSystem = explosionParticleSystem;
+        spawnedEnemy.player = player;
 
         hudKills.text = $"Kills: {kills}";
     }

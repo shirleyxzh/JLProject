@@ -9,7 +9,13 @@ public class EnemyAI : MonoBehaviour
     public UnityEvent<Vector2> OnMovementInput, OnPointerInput;
     public UnityEvent<bool> OnAttack;
 
+    public bool isDead { get; private set; } = false;
+
     public Agent player;
+    public ParticleSystem explosionParticleSystem;
+
+    [SerializeField, Min(0)]
+    int explosionParticleCount = 50;
 
     [SerializeField]
     private float chaseDist = 3, attackDist = 0.8f;
@@ -17,12 +23,30 @@ public class EnemyAI : MonoBehaviour
     [SerializeField]
     private float attackDelay = 1;
     private float passedTime = 1;
-    private bool isDead = false;
+    private float destoryTimer = 2;
 
     private void Update()
     {
-        if (isDead)
+        if (isDead)    // this is where the code determain if there is an enemy on the ground... so if i have a count here... 
+        {
+            if (destoryTimer > 0)
+            {
+                destoryTimer -= Time.deltaTime;
+                if (destoryTimer <= 0)
+                {
+                    explosionParticleSystem.Emit(
+                        new ParticleSystem.EmitParams
+                        {
+                            position = new Vector3(transform.position.x, transform.position.y),
+                            applyShapeToPosition = true
+                        },
+                        explosionParticleCount
+                    );
+                    Destroy(gameObject);
+                }
+            }
             return;
+        }
 
         if (player.GetHP == 0)
         {
@@ -69,7 +93,6 @@ public class EnemyAI : MonoBehaviour
             isDead = true;
             OnAttack?.Invoke(false);
             OnMovementInput?.Invoke(Vector2.zero);
-            Destroy(gameObject, 2);
         }
     }
 }
