@@ -25,7 +25,7 @@ public class BulletManager : MonoBehaviour
     {
         for (int i = 0; i < bullets.Count; i++)
         {
-            if (!bullets[i].activeSelf && bullets[i].GetComponent<Bullet>().type == type)
+            if (!bullets[i].activeSelf && bullets[i].tag == type)
             {
                 bullets[i].SetActive(true);
                 return bullets[i];

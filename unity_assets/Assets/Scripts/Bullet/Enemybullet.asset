@@ -21,3 +21,4 @@ MonoBehaviour:
   isParent: 0
   cooldown: 0.5
   bulletSpeed: 4
+  bulletTag: enemyBullet

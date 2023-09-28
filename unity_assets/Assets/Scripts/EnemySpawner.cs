@@ -13,7 +13,7 @@ public class EnemySpawner : MonoBehaviour
     private GameObject EnemyPrefab;
 
     [SerializeField]
-    private int enemyMax;
+    private int TotolToSpawn = 3;
 
     [SerializeField]
     ParticleSystem explosionParticleSystem;
@@ -25,32 +25,46 @@ public class EnemySpawner : MonoBehaviour
     private Vector3[] spawnPoints;
 
     private int kills;
-    private EnemyAI spawnedEnemy;
+    private int spawned;
+    private float spawnTimer;
+    private int spawnPointIdx;
 
     private void Start()
     {
         kills = 0;
-        SpawnEnemy();
+        spawned = 0;
+        spawnPointIdx = Random.Range(0, spawnPoints.Length);
     }
 
     private void Update()
     {
-        if (spawnedEnemy.isDead)  //<- this is calling spawn enemy.. so the emeny on screen count check should be here..?? 
+        if (spawned < TotolToSpawn)
         {
-            kills++;
-            SpawnEnemy();
+            spawnTimer -= Time.deltaTime;
+            if (spawnTimer <= 0)
+            {
+                SpawnEnemy();
+                spawnTimer = Random.Range(2, 5);
+            }
         }
     }
 
     private void SpawnEnemy()  
     {
         var obj = Instantiate(EnemyPrefab);
-        obj.transform.position = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        obj.transform.position = spawnPoints[spawnPointIdx++ % spawnPoints.Length];
 
-        spawnedEnemy = obj.GetComponent<EnemyAI>();
+        var spawnedEnemy = obj.GetComponent<EnemyAI>();
         spawnedEnemy.explosionParticleSystem = explosionParticleSystem;
+        spawnedEnemy.DeathCB.AddListener(EnemyDied);
         spawnedEnemy.player = player;
+        spawned++;
+    }
 
+    void EnemyDied()
+    {
+        kills++;
+        spawned--;
         hudKills.text = $"Kills: {kills}";
     }
 }

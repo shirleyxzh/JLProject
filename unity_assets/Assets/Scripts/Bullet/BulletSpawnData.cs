@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using WSWhitehouse.TagSelector;
+
 [CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/BulletSpawnData", order = 1)]
 public class BulletSpawnData : ScriptableObject
 {
@@ -10,4 +12,6 @@ public class BulletSpawnData : ScriptableObject
     public bool isParent = true;
     public float cooldown;
     public float bulletSpeed;
+    [TagSelector]
+    public string bulletTag;
 }

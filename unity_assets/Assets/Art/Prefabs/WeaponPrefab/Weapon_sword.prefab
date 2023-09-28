@@ -90,8 +90,24 @@ PrefabInstance:
     - target: {fileID: 1486251689660292099, guid: d217755b6a950674aa426bfc1f56c222,
         type: 3}
       propertyPath: m_Name
-      value: Weapon_sword Variant
+      value: Weapon_sword
       objectReference: {fileID: 0}
+    - target: {fileID: 1919650029929172148, guid: d217755b6a950674aa426bfc1f56c222,
+        type: 3}
+      propertyPath: bulletType
+      value: playerBullet
+      objectReference: {fileID: 0}
+    - target: {fileID: 1919650029929172148, guid: d217755b6a950674aa426bfc1f56c222,
+        type: 3}
+      propertyPath: spawnDatas.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1919650029929172148, guid: d217755b6a950674aa426bfc1f56c222,
+        type: 3}
+      propertyPath: spawnDatas.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: e25d1797fb729274396d748929503e82,
+        type: 2}
     - target: {fileID: 6840466665063716045, guid: d217755b6a950674aa426bfc1f56c222,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -141,6 +157,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7616566792216850791, guid: d217755b6a950674aa426bfc1f56c222,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0402
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

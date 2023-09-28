@@ -4,12 +4,14 @@ using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
 using UnityEngine.Events;
+using WSWhitehouse.TagSelector;
 
 public class Agent : MonoBehaviour
 {
     public UnityEvent<int, int> OnAttacked;
 
     public int StartingHP;
+    [TagSelector]
     public string CanAttackByType;
     public Transform AttackPoint;
 
@@ -30,7 +32,16 @@ public class Agent : MonoBehaviour
     public void PeformAttack(bool AttackStarted) 
     {
         if (playerHP > 0)
+        {
+            if (AttackStarted)
+                agentAnimations.PlayAttack();
             weaponParent.PerformAnAttack(AttackStarted);
+        }
+    }
+    public void PeformRoll()
+    {
+        if (playerHP > 0)
+            agentAnimations.PlayRoll();
     }
     private void Awake()
     {
@@ -60,18 +71,18 @@ public class Agent : MonoBehaviour
         }
     }
 
-    public void HitByObject(GameObject obj)
+    private void OnTriggerEnter(Collider other)
     {
-        var bullet = obj.GetComponentInParent<Bullet>();
-        if (bullet && bullet.type == CanAttackByType && playerHP > 0)
+        if (other.tag == CanAttackByType && playerHP > 0)
         {
             playerHits++;
+            var bullet = other.GetComponent<Bullet>();
             playerHP = Mathf.Max(playerHP - bullet.damage, 0);
             OnAttacked?.Invoke(playerHits, playerHP);
             bullet.gameObject.SetActive(false);
             if (playerHP == 0)
             {
-                agentMover.MovementInput = Vector2.zero;
+                agentMover.MovementInput = Vector3.zero;
                 weaponParent.PerformAnAttack(false);
                 agentAnimations.PlayDead();
             }

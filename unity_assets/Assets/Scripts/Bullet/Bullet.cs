@@ -7,7 +7,6 @@ public class Bullet : MonoBehaviour
     public float speed;
     public float rotation;
     public float lifeTime;
-    public string type;
     public float timer;
     public int damage;
     public float scaler = 1f;

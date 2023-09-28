@@ -9,7 +9,6 @@ public class BulletSpawner : MonoBehaviour
     public bool isSequenceRandom;
     public bool isSequenceInOrder;
     public bool spawnAutomatically;
-    public string bulletType;
     BulletSpawnData GetSpawnData()
     {
         return spawnDatas[index];
@@ -98,8 +97,8 @@ public class BulletSpawner : MonoBehaviour
         GameObject[] spawnedBullets = new GameObject[GetSpawnData().numberOfBullets];
         for (int i = 0; i < GetSpawnData().numberOfBullets; i++)
         {
-            if (bulletType != "")
-                spawnedBullets[i] = BulletManager.GetBulletFromPoolWithType(bulletType);
+            if (GetSpawnData().bulletTag != "Untagged")
+                spawnedBullets[i] = BulletManager.GetBulletFromPoolWithType(GetSpawnData().bulletTag);
             else
                 spawnedBullets[i] = BulletManager.GetBulletFromPool();
             if (spawnedBullets[i] == null)

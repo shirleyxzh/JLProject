@@ -11,22 +11,25 @@ public class PlayerInput : MonoBehaviour
 {
     public UnityEvent<Vector2> OnMovementInput, OnPointerInput;
     public UnityEvent<bool> OnAttack;
+    public UnityEvent OnRoll;
 
     public TextMeshProUGUI hud;
 
     [SerializeField]
-    private InputActionReference movement, attack, pointerPosition;
+    private InputActionReference movement, attack, pointerPosition, roll;
 
     private void OnEnable()
     {
         attack.action.started += PerformAttack;
         attack.action.canceled += StopAttack;
+        roll.action.started += PerformRoll;
     }
 
     private void OnDisable()
     {
         attack.action.started -= PerformAttack;
         attack.action.canceled -= StopAttack;
+        roll.action.started -= PerformRoll;
     }
 
     void Update()
@@ -49,6 +52,10 @@ public class PlayerInput : MonoBehaviour
     private void StopAttack(InputAction.CallbackContext context)
     {
         OnAttack?.Invoke(false);
+    }
+    private void PerformRoll(InputAction.CallbackContext context)
+    {
+        OnRoll?.Invoke();
     }
 
     public void WasAttacked(int hits, int hp)
