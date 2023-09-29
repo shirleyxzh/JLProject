@@ -20,6 +20,14 @@ public class Parallax : MonoBehaviour
     private Vector3[] nitchMesh = null;
     private Vector3[] cornerMesh = null;
 
+    struct Blocker
+    {
+        public Transform pos;
+        public Vector3 center;
+        public Blocker(Transform p, Vector3 c) { pos = p; center = c; }
+    };
+    private List<Blocker> blockers = new List<Blocker>();
+
     private Connector isConnector;
 
     private void Awake()
@@ -52,6 +60,13 @@ public class Parallax : MonoBehaviour
             }
 
             bbox.Encapsulate(pos);
+        }
+
+        var blockers = GetComponentsInChildren<WallBlock>();
+        foreach (var wall in blockers)
+        {
+            var blocker = new Blocker(wall.transform, wall.transform.position);
+            this.blockers.Add(blocker);
         }
 
         if (emptyBBox)
@@ -135,6 +150,12 @@ public class Parallax : MonoBehaviour
                 adjustVerts(wall, nitchMesh, nitchVerts, step);
             else if (name.Contains("corner"))
                 adjustVerts(wall, cornerMesh, cornerVerts, step);
+        }
+
+        foreach (var blocker in blockers)
+        {
+            var step = (Quaternion.Euler(blocker.pos.rotation.eulerAngles) * offset) / blocker.pos.localScale.y;
+            blocker.pos.position = blocker.center + step;
         }
     }
 }
