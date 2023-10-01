@@ -21,7 +21,7 @@ PrefabInstance:
     - target: {fileID: 1919650029929172148, guid: d217755b6a950674aa426bfc1f56c222,
         type: 3}
       propertyPath: spawnDatas.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1919650029929172148, guid: d217755b6a950674aa426bfc1f56c222,
         type: 3}

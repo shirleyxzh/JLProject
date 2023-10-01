@@ -100,13 +100,13 @@ PrefabInstance:
     - target: {fileID: 1919650029929172148, guid: d217755b6a950674aa426bfc1f56c222,
         type: 3}
       propertyPath: spawnDatas.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1919650029929172148, guid: d217755b6a950674aa426bfc1f56c222,
         type: 3}
       propertyPath: spawnDatas.Array.data[0]
       value: 
-      objectReference: {fileID: 11400000, guid: e25d1797fb729274396d748929503e82,
+      objectReference: {fileID: 11400000, guid: 917d66363af94184fb47e2750d9ff4b6,
         type: 2}
     - target: {fileID: 6840466665063716045, guid: d217755b6a950674aa426bfc1f56c222,
         type: 3}
