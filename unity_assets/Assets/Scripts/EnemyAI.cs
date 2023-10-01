@@ -8,12 +8,6 @@ public class EnemyAI : MonoBehaviour
 {
     public UnityEvent<Vector2> OnMovementInput, OnPointerInput;
     public UnityEvent<bool> OnAttack;
-    public UnityEvent DeathCB;
-
-    public bool isDead { get; private set; } = false;
-
-    public Agent player;
-    public ParticleSystem explosionParticleSystem;
 
     [SerializeField, Min(0)]
     int explosionParticleCount = 50;
@@ -23,10 +17,19 @@ public class EnemyAI : MonoBehaviour
 
     [SerializeField]
     private float attackDelay = 1;
-    
+
+    // callbacks to update HUD - - set by EnemySpawner
+    public UnityEvent<int, int> HitCB { get;  set; } = new UnityEvent<int, int>();
+    public UnityEvent DeathCB { get; set; } = new UnityEvent();
+
+
+    public Agent player { get; set; }
+    public ParticleSystem explosionParticleSystem { get; set; }
+
+    private bool isDead = false;
     private float passedTime = 1;
-    private float destoryTimer = 2;
-    
+    private float destoryTimer = 0.5f;
+
     private Agent thisEnemy;
     private Vector3 lastSeenPosition;
     private bool lastSeenValid = false;
@@ -34,6 +37,7 @@ public class EnemyAI : MonoBehaviour
     private void Start()
     {
         thisEnemy = GetComponent<Agent>();
+        thisEnemy.OnAttacked.AddListener(WasAttacked);
     }
     private void Update()
     {
@@ -50,7 +54,7 @@ public class EnemyAI : MonoBehaviour
                     explosionParticleSystem.Emit(
                         new ParticleSystem.EmitParams
                         {
-                            position = new Vector3(enemyPos.x, enemyPos.y),
+                            position = enemyPos,
                             applyShapeToPosition = true
                         },
                         explosionParticleCount
@@ -124,6 +128,7 @@ public class EnemyAI : MonoBehaviour
 
     public void WasAttacked(int hits, int hp)
     {
+        HitCB?.Invoke(hits, hp);
         if (hp == 0 && !isDead)
         {
             isDead = true;

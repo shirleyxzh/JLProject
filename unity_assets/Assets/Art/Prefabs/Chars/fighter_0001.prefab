@@ -98,20 +98,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 19764529596307588, guid: f5f1c45296ef4f349976129828b20e00,
+    - target: {fileID: 87307888976727970, guid: f5f1c45296ef4f349976129828b20e00,
         type: 3}
-      propertyPath: maxSpeed
-      value: 4
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4704964071572232931, guid: f5f1c45296ef4f349976129828b20e00,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6150974324830398929, guid: f5f1c45296ef4f349976129828b20e00,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.73
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6150974324830398929, guid: f5f1c45296ef4f349976129828b20e00,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.83
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6150974324830398929, guid: f5f1c45296ef4f349976129828b20e00,
         type: 3}

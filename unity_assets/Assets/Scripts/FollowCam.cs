@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FollowCam : MonoBehaviour
 {
-    public GameObject Player;
+    public GameObject Player { get; set; }
     
     private void LateUpdate()
     {

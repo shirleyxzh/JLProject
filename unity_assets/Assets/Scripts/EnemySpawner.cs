@@ -4,11 +4,9 @@ using UnityEngine;
 using TMPro;
 using UnityEditor.Experimental.GraphView;
 
+[RequireComponent(typeof(PlayerSpawner))]
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField]
-    private Agent player;
-
     [SerializeField]
     private GameObject EnemyPrefab;
 
@@ -28,7 +26,12 @@ public class EnemySpawner : MonoBehaviour
     private int spawned;
     private float spawnTimer;
     private int spawnPointIdx;
+    private PlayerSpawner playerSpawner;
 
+    private void Awake()
+    {
+        playerSpawner = GetComponent<PlayerSpawner>();
+    }
     private void Start()
     {
         kills = 0;
@@ -49,15 +52,16 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
-    private void SpawnEnemy()  
+    private void SpawnEnemy()
     {
         var obj = Instantiate(EnemyPrefab);
         obj.transform.position = spawnPoints[spawnPointIdx++ % spawnPoints.Length];
 
         var spawnedEnemy = obj.GetComponent<EnemyAI>();
         spawnedEnemy.explosionParticleSystem = explosionParticleSystem;
+        spawnedEnemy.player = playerSpawner.player;
         spawnedEnemy.DeathCB.AddListener(EnemyDied);
-        spawnedEnemy.player = player;
+        spawnedEnemy.HitCB.AddListener(EnemyHit);
         spawned++;
     }
 
@@ -66,5 +70,9 @@ public class EnemySpawner : MonoBehaviour
         kills++;
         spawned--;
         hudKills.text = $"Kills: {kills}";
+    }
+
+    void EnemyHit(int hits, int hp)
+    {
     }
 }

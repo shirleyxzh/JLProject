@@ -13,10 +13,18 @@ public class PlayerInput : MonoBehaviour
     public UnityEvent<bool> OnAttack;
     public UnityEvent OnRoll;
 
-    public TextMeshProUGUI hud;
-
     [SerializeField]
     private InputActionReference movement, attack, pointerPosition, roll;
+
+    // callbacks to update HUD - set by PlayerSpawner
+    public UnityEvent<int, int> HitCB { get; set; } = new UnityEvent<int, int>();
+    public UnityEvent DeathCB { get; set; } = new UnityEvent();
+
+    private void Start()
+    {
+        var agent = GetComponent<Agent>();
+        agent.OnAttacked.AddListener(WasAttacked);
+    }
 
     private void OnEnable()
     {
@@ -60,6 +68,10 @@ public class PlayerInput : MonoBehaviour
 
     public void WasAttacked(int hits, int hp)
     {
-        hud.text = $"Hits: {hits}\nHP: {hp}";
+        HitCB?.Invoke(hits, hp);
+        if (hp == 0)
+        {
+            DeathCB?.Invoke();
+        }
     }
 }

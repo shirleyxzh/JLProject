@@ -8,12 +8,12 @@ using WSWhitehouse.TagSelector;
 
 public class Agent : MonoBehaviour
 {
-    public UnityEvent<int, int> OnAttacked;
-
     public int StartingHP;
     [TagSelector]
     public string CanAttackByType;
     public Transform AttackPoint;
+
+    public UnityEvent<int, int> OnAttacked { get; set; } = new UnityEvent<int, int>();
 
     private AgentAnimations agentAnimations;
     private AgentMover agentMover;
