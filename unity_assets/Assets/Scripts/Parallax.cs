@@ -127,10 +127,16 @@ public class Parallax : MonoBehaviour
     private void adjustVerts(MeshFilter wall, Vector3[] mesh, int[] idx, Vector3 step)
     {
         var vertices = wall.mesh.vertices;
-        for (int i = 0; i < idx.Length; i++)
+        for (int i = 0; i < mesh.Length; i++)
         {
-            vertices[idx[i]] = mesh[idx[i]] + step;
+            var vert = mesh[i];
+            if (vert.y > 0)
+                vertices[i] = vert + step;
         }
+        //for (int i = 0; i < idx.Length; i++)
+        //{
+        //    vertices[idx[i]] = mesh[idx[i]] + step;
+        //}
         wall.mesh.vertices = vertices;
         wall.mesh.RecalculateBounds();
         wall.mesh.RecalculateNormals();
