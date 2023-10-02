@@ -1,11 +1,9 @@
 using UnityEngine;
-using System.Collections;
-using UnityEngine.XR;
-using static Unity.VisualScripting.Metadata;
 using System.Collections.Generic;
 
 public class BlockerMaker : MonoBehaviour
 {
+#if UNITY_EDITOR
     public GameObject blockerPrefab;
 
     public GameObject createObject()
@@ -89,4 +87,5 @@ public class BlockerMaker : MonoBehaviour
     {
         return (Mathf.Abs(a - b) < 0.001f);
     }
+#endif
 }

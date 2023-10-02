@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.InputSystem.HID;
 
 public class PlayerSpawner : MonoBehaviour
 {
@@ -32,6 +30,18 @@ public class PlayerSpawner : MonoBehaviour
         var pi = obj.GetComponent<PlayerInput>();
         pi.DeathCB.AddListener(PlayerDied);
         pi.HitCB.AddListener(PlayerHit);
+    }
+
+    void Update()
+    {
+        if (Input.GetKey("escape"))
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif 
+        }
     }
 
     void PlayerDied()
