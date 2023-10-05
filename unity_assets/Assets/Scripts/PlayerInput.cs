@@ -20,6 +20,8 @@ public class PlayerInput : MonoBehaviour
     public UnityEvent<int, int> HitCB { get; set; } = new UnityEvent<int, int>();
     public UnityEvent DeathCB { get; set; } = new UnityEvent();
 
+    private Vector3 lastPointerVal = Vector3.zero;
+
     private void Start()
     {
         var agent = GetComponent<Agent>();
@@ -48,9 +50,25 @@ public class PlayerInput : MonoBehaviour
 
     private Vector2 GetPointerInput()
     {
-        Vector3 mousePos = pointerPosition.action.ReadValue<Vector2>();
-        mousePos.z = Camera.main.nearClipPlane;
-        return Camera.main.ScreenToWorldPoint(mousePos);
+        Vector3 ponterVal = pointerPosition.action.ReadValue<Vector2>();
+        if (ponterVal == Vector3.zero)
+            ponterVal = lastPointerVal;     // no new input - use last val
+
+        if (ponterVal.x > 1 || ponterVal.y > 1)
+        {
+            // assume mouse input
+            lastPointerVal = ponterVal;
+            ponterVal.z = Camera.main.nearClipPlane;
+            return Camera.main.ScreenToWorldPoint(ponterVal);
+        }
+
+        // joystick input
+        if (ponterVal.sqrMagnitude < 1f)
+            ponterVal = lastPointerVal;
+        else
+            lastPointerVal = ponterVal;
+        var pos = ponterVal + transform.position;
+        return pos;
     }
 
     private void PerformAttack(InputAction.CallbackContext context)

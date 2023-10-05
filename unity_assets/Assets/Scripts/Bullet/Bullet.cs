@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed;
-    public float rotation;
     public float lifeTime;
-    public float timer;
     public int damage;
+    public float spinSpeed;
     public float scaler = 1f;
+
+    public float speed { get; set; }
+    public float timer { get; set; }
+    public float rotation { get; set; }
+    public Vector3 direction { get; set; }
 
     private void Start()
     {
@@ -17,7 +20,8 @@ public class Bullet : MonoBehaviour
     }
     void Update()
     {
-        transform.position += transform.right * speed * Time.deltaTime;
+        transform.position += direction * speed * Time.deltaTime;
+        transform.Rotate(Vector3.forward * 360f * spinSpeed * Time.deltaTime, Space.Self);
         timer -= Time.deltaTime;
         if (timer <= 0) gameObject.SetActive(false);
     }

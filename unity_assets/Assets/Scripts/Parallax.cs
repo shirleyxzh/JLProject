@@ -6,6 +6,8 @@ using UnityEngine.Rendering.Universal;
 
 public class Parallax : MonoBehaviour
 {
+    public bool ParallaxOff = false;
+
     public Bounds bounds { get; private set; }
 
     private MeshFilter[] meshes;
@@ -74,7 +76,7 @@ public class Parallax : MonoBehaviour
     public bool InsideBounds(Vector3 pos, out Vector3 offset)
     {        
         offset = Vector3.zero;
-        var inside = bounds.Contains(pos);
+        var inside = !ParallaxOff && bounds.Contains(pos);
         if (inside)
         {
             var off = pos - bounds.center;
@@ -128,6 +130,9 @@ public class Parallax : MonoBehaviour
 
     public void OnUpdate(Vector3 offset)
     {
+        if (ParallaxOff)
+            offset = Vector3.zero;
+
         foreach (var wall in meshes)
         {
             var name = wall.gameObject.name;

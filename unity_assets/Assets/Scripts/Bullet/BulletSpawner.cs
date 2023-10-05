@@ -115,6 +115,7 @@ public class BulletSpawner : MonoBehaviour
             var b = spawnedBullets[i].GetComponent<Bullet>();
             b.timer = b.lifeTime;
             b.rotation = rotations[i];
+            b.direction = b.transform.right;
             b.speed = GetSpawnData().bulletSpeed;
             if (!GetSpawnData().isParent) spawnedBullets[i].transform.SetParent(BulletManager.bulletDump.transform);
         }

@@ -18060,6 +18060,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 1
 --- !u!1001 &1999679457
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19196,6 +19197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 0
 --- !u!1 &2093649157875172555
 GameObject:
   m_ObjectHideFlags: 0
@@ -19669,6 +19671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 0
 --- !u!1 &3980930854923541036
 GameObject:
   m_ObjectHideFlags: 0
@@ -19818,6 +19821,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallHeight: 0.8
+  combineRooms: 0
 --- !u!114 &6687282600368256758
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1224,6 +1224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 0
 --- !u!1001 &72070983
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2104,6 +2105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 1
 --- !u!1001 &114493828
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4177,6 +4179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 0
 --- !u!1001 &217466898
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14857,6 +14860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 0
 --- !u!1 &912424365
 GameObject:
   m_ObjectHideFlags: 0
@@ -21450,6 +21454,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 0
 --- !u!114 &1366849055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21888,6 +21893,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 0
 --- !u!114 &1385390870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22995,6 +23001,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 0
 --- !u!1001 &1427297958
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23609,6 +23616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 0
 --- !u!114 &1459206641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27208,6 +27216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 0
 --- !u!114 &1699443923
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33091,6 +33100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ParallaxOff: 0
 --- !u!114 &2101970912
 MonoBehaviour:
   m_ObjectHideFlags: 0

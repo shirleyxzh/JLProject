@@ -1,11 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using Unity.VisualScripting;
 using UnityEngine;
-using static System.Collections.Specialized.BitVector32;
-using static UnityEditor.PlayerSettings;
-using static UnityEngine.Rendering.CoreUtils;
 
 public class Parallaxer : MonoBehaviour
 {
