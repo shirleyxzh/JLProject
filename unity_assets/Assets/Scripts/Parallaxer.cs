@@ -11,29 +11,29 @@ public class Parallaxer : MonoBehaviour
 
     private void Start()
     {
+        var off = Vector3.up * wallHeight;
+        targetOffset = new Vector3(off.x, 0, off.y);
+
         sections = GetComponentsInChildren<Parallax>();
         foreach (var s in sections)
         {
             bounds.Encapsulate(s.bounds);
+            if (combineRooms)
+                s.OnUpdate(targetOffset);
         }
     }
 
     private void LateUpdate()
     {
+        if (combineRooms)
+            return;
+
         var off = Vector3.zero;
         var cam = Camera.main.transform.position;
-        if (combineRooms)
+        foreach (var s in sections)
         {
-            off = cam - bounds.center;
-            off = new Vector2(off.x / bounds.extents.x, off.y / bounds.extents.y);
-        }
-        else
-        {
-            foreach (var s in sections)
-            {
-                if (s.InsideBounds(cam, out off))
-                    break;
-            }
+            if (s.InsideBounds(cam, out off))
+                break;
         }
         off *= wallHeight;
         targetOffset = new Vector3(off.x, 0, off.y);

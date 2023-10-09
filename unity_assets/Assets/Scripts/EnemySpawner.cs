@@ -53,15 +53,21 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        var obj = Instantiate(EnemyPrefab);
-        obj.transform.position = spawnPoints[spawnPointIdx++ % spawnPoints.Length];
+        var mask = LayerMask.GetMask("enemy") | LayerMask.GetMask("player");
+        var pos = spawnPoints[spawnPointIdx++ % spawnPoints.Length];
+        var spaceTaken = Physics.CheckSphere(pos, 1f, mask);
+        if (!spaceTaken)
+        {
+            var obj = Instantiate(EnemyPrefab);
+            obj.transform.position = pos;
 
-        var spawnedEnemy = obj.GetComponent<EnemyAI>();
-        spawnedEnemy.explosionParticleSystem = explosionParticleSystem;
-        spawnedEnemy.player = playerSpawner.player;
-        spawnedEnemy.DeathCB.AddListener(EnemyDied);
-        spawnedEnemy.HitCB.AddListener(EnemyHit);
-        spawned++;
+            var spawnedEnemy = obj.GetComponent<EnemyAI>();
+            spawnedEnemy.explosionParticleSystem = explosionParticleSystem;
+            spawnedEnemy.player = playerSpawner.player;
+            spawnedEnemy.DeathCB.AddListener(EnemyDied);
+            spawnedEnemy.HitCB.AddListener(EnemyHit);
+            spawned++;
+        }
     }
 
     void EnemyDied()

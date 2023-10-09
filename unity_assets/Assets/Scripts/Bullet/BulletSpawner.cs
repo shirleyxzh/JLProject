@@ -9,6 +9,7 @@ public class BulletSpawner : MonoBehaviour
     public bool isSequenceRandom;
     public bool isSequenceInOrder;
     public bool spawnAutomatically;
+
     BulletSpawnData GetSpawnData()
     {
         return spawnDatas[index];
@@ -109,7 +110,7 @@ public class BulletSpawner : MonoBehaviour
             {
                 spawnedBullets[i].transform.SetParent(transform);
             }
-            spawnedBullets[i].transform.localPosition = Vector3.zero;
+            spawnedBullets[i].transform.localPosition = Vector3.back * 0.01f;
             spawnedBullets[i].transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg);
 
             var b = spawnedBullets[i].GetComponent<Bullet>();
@@ -117,6 +118,7 @@ public class BulletSpawner : MonoBehaviour
             b.rotation = rotations[i];
             b.direction = b.transform.right;
             b.speed = GetSpawnData().bulletSpeed;
+            b.hitVFX = BulletManager.GetHitVFX();
             if (!GetSpawnData().isParent) spawnedBullets[i].transform.SetParent(BulletManager.bulletDump.transform);
         }
         return spawnedBullets;

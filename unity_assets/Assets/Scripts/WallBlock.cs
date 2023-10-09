@@ -8,6 +8,9 @@ public class WallBlock : MonoBehaviour
     {
         var layer = LayerMask.NameToLayer("bullet");
         if (other.gameObject.layer == layer)
-            other.gameObject.SetActive(false);
+        {
+            var bullet = other.GetComponent<Bullet>();
+            bullet?.RemoveWithVFX(other.transform.position);
+        }
     }
 }

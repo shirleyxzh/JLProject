@@ -156,7 +156,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
@@ -221,8 +221,7 @@ GameObject:
   m_Component:
   - component: {fileID: 87307888976727970}
   - component: {fileID: 5613248239348493541}
-  - component: {fileID: 4724710852416479715}
-  m_Layer: 15
+  m_Layer: 0
   m_Name: shadow_ellipse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -296,27 +295,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!65 &4724710852416479715
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7014937183822677990}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.64, y: 0.32, z: 0.2}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8891684658820580300
 GameObject:
   m_ObjectHideFlags: 0
@@ -326,7 +304,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6069424215058469643}
-  m_Layer: 15
+  - component: {fileID: 8655820576542019183}
+  m_Layer: 9
   m_Name: atk_point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -348,3 +327,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6150974324830398929}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!135 &8655820576542019183
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8891684658820580300}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.08
+  m_Center: {x: 0, y: 0, z: 0}

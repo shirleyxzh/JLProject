@@ -14,8 +14,12 @@ public class BlockerMaker : MonoBehaviour
             DestroyImmediate(root.gameObject);
 
         // create a new one
-        var baseObj = new GameObject("Blockers", typeof(Parallax));
+        var baseObj = new GameObject("Blockers");
         baseObj.transform.SetParent(transform.parent, false);
+        var wallsObj = new GameObject("Walls", typeof(Parallax));
+        wallsObj.transform.SetParent(baseObj.transform, false);
+        //var floorObj = new GameObject("Floor");
+        //floorObj.transform.SetParent(baseObj.transform, false);
 
         // add blockers to base
         if (blockerPrefab != null)
@@ -69,18 +73,24 @@ public class BlockerMaker : MonoBehaviour
                         bboxes.Remove(box);
                 }
 
-                GameObject obj = (GameObject)Instantiate(blockerPrefab, baseObj.transform);
-                obj.transform.position = bbox.center;
-                obj.name = "blocker";
-
-                // expand blocker size
                 bbox.Expand(0.6f);
-                var col = obj.GetComponent<BoxCollider>();
-                col.size = new Vector3(bbox.size.x, 2, bbox.size.y);
+                CreateBlocker(bbox, wallsObj, "wall");
+                //CreateBlocker(bbox, floorObj, "floor");
             }
         }
 
         return baseObj;
+    }
+
+    private void CreateBlocker(Bounds bbox, GameObject baseObj, string layer)
+    {
+        GameObject obj = (GameObject)Instantiate(blockerPrefab, baseObj.transform);
+        obj.layer = LayerMask.NameToLayer(layer);
+        obj.transform.position = bbox.center;
+        obj.name = "blocker";
+
+        var col = obj.GetComponent<BoxCollider>();
+        col.size = new Vector3(bbox.size.x, 2, bbox.size.y);
     }
 
     private bool approx(float a, float b)

@@ -4,10 +4,13 @@ public class BulletManager : MonoBehaviour
 {
     public static GameObject bulletDump;
     public static List<GameObject> bullets;
+    public static ParticleSystem hitVFX;
+
     private void Start()
     {
         bulletDump = this.gameObject;
         bullets = new List<GameObject>();
+        hitVFX = GetComponentInChildren<ParticleSystem>();
     }
     public static GameObject GetBulletFromPool()
     {
@@ -32,5 +35,10 @@ public class BulletManager : MonoBehaviour
             }
         }
         return null;
+    }
+
+    public static ParticleSystem GetHitVFX()
+    {
+        return hitVFX;
     }
 }

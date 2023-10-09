@@ -79,7 +79,7 @@ public class Agent : MonoBehaviour
             var bullet = other.GetComponent<Bullet>();
             playerHP = Mathf.Max(playerHP - bullet.damage, 0);
             OnAttacked?.Invoke(playerHits, playerHP);
-            bullet.gameObject.SetActive(false);
+            bullet.RemoveWithVFX(AttackPoint.position);
             if (playerHP == 0)
             {
                 agentMover.MovementInput = Vector3.zero;

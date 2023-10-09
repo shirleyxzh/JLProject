@@ -18,8 +18,8 @@ TagManager:
   - UI
   - bullet
   - wall
-  - 
-  - 
+  - floor
+  - attackPoint
   - player
   - 
   - 

@@ -19,6 +19,6 @@ MonoBehaviour:
   numberOfBullets: 1
   isRandom: 0
   isParent: 0
-  cooldown: 0.1
-  bulletSpeed: 4
+  cooldown: 0.3
+  bulletSpeed: 3
   bulletTag: playerBullet

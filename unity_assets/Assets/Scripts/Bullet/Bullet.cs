@@ -13,6 +13,7 @@ public class Bullet : MonoBehaviour
     public float timer { get; set; }
     public float rotation { get; set; }
     public Vector3 direction { get; set; }
+    public ParticleSystem hitVFX { get; set; }
 
     private void Start()
     {
@@ -23,6 +24,20 @@ public class Bullet : MonoBehaviour
         transform.position += direction * speed * Time.deltaTime;
         transform.Rotate(Vector3.forward * 360f * spinSpeed * Time.deltaTime, Space.Self);
         timer -= Time.deltaTime;
-        if (timer <= 0) gameObject.SetActive(false);
+        if (timer <= 0)
+           gameObject.SetActive(false);
+    }
+
+    public void RemoveWithVFX(Vector3 pos)
+    {
+        gameObject.SetActive(false);
+        hitVFX.Emit(
+            new ParticleSystem.EmitParams
+            {
+                position = pos + Vector3.back * 0.1f,
+                applyShapeToPosition = true
+            },
+            1
+        );
     }
 }
