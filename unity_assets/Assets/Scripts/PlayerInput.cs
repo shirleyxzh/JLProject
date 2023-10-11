@@ -21,6 +21,7 @@ public class PlayerInput : MonoBehaviour
     public UnityEvent DeathCB { get; set; } = new UnityEvent();
 
     private Vector3 lastPointerVal = Vector3.zero;
+    private bool continueAttack = false;
 
     private void Start()
     {
@@ -46,6 +47,8 @@ public class PlayerInput : MonoBehaviour
     {
         OnMovementInput?.Invoke(movement.action.ReadValue<Vector2>().normalized);
         OnPointerInput?.Invoke(GetPointerInput());
+        if (continueAttack)
+            OnAttack?.Invoke(true);
     }
 
     private Vector2 GetPointerInput()
@@ -73,10 +76,12 @@ public class PlayerInput : MonoBehaviour
 
     private void PerformAttack(InputAction.CallbackContext context)
     {
+        continueAttack = true;
         OnAttack?.Invoke(true);
     }
     private void StopAttack(InputAction.CallbackContext context)
     {
+        continueAttack = false;
         OnAttack?.Invoke(false);
     }
     private void PerformRoll(InputAction.CallbackContext context)

@@ -114,7 +114,6 @@ public class BulletSpawner : MonoBehaviour
             spawnedBullets[i].transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(targetDirection.y, targetDirection.x) * Mathf.Rad2Deg);
 
             var b = spawnedBullets[i].GetComponent<Bullet>();
-            b.timer = b.lifeTime;
             b.rotation = rotations[i];
             b.direction = b.transform.right;
             b.speed = GetSpawnData().bulletSpeed;

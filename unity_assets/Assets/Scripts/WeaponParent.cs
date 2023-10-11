@@ -15,7 +15,6 @@ public class WeaponParent : MonoBehaviour
     }
     private void Update() 
     {
-        transform.right = ((Vector2)transform.position-PointerPosition).normalized;
         if (shooting)
             spawner.ShootAt(PointerPosition);
         else

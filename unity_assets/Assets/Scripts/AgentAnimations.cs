@@ -9,13 +9,14 @@ public class AgentAnimations : MonoBehaviour
     private float moveDir;
     private float lookDirX;
     private float lookDirY;
-    private float lastSpeed;
 
-    private bool isRolling;
+    public bool isRolling { get; private set; }
+    private float blinkTimer;
 
     private void Awake()
     {
         animator = GetComponentInChildren<Animator>();
+        blinkTimer = Random.Range(5f, 8f);
         isRolling = false;
     }
 
@@ -31,12 +32,7 @@ public class AgentAnimations : MonoBehaviour
     {
         if (isRolling)
         {
-            var info = animator.GetCurrentAnimatorStateInfo(0);
-            if (info.IsName("player_roll"))
-            {
-                var time = info.normalizedTime;
-                isRolling = (lastSpeed > 0 && time < 1f) || (lastSpeed < 0 && time > 0f);
-            }
+            isRolling = GetRollTime() < 1f;
         }
         else if (moveTo == Vector2.zero)
         {
@@ -49,27 +45,47 @@ public class AgentAnimations : MonoBehaviour
             setAnimSpeed(moveDir == lookDirX ? 1 : -1);
             animator.Play("Base Layer.player_walk");
         }
+
+        blinkTimer -= Time.deltaTime;
+        if (blinkTimer < 0)
+        {
+            animator.SetTrigger("face_blink");
+            blinkTimer = Random.Range(5f, 8f);
+        }
+    }
+
+    public float GetRollTime()
+    {
+        var time = 0f;
+        var info = animator.GetCurrentAnimatorStateInfo(0);
+        if (info.IsName("player_roll"))
+            time = info.normalizedTime;
+        return Mathf.Clamp01(time);
     }
 
     public void PlayDead()
     {
+        animator.SetTrigger("face_death");
         animator.Play("Base Layer.player_death");
     }
 
     public void PlayRoll()
     {
+        setAnimSpeed(1);
+        animator.Play("Base Layer.player_roll");
         isRolling = true;
-        animator.Play("Base Layer.player_roll", -1, lastSpeed > 0 ? 0 : 1);
     }
 
-    public void PlayAttack()
+    public void PlayAttack(bool AttackStarted)
     {
-        animator.SetTrigger("atk");
+        if (AttackStarted)
+            animator.SetTrigger("atk");
+        else
+            animator.ResetTrigger("atk");
     }
 
     private void setAnimSpeed(float speed)
     {
-        lastSpeed = speed;
         animator.SetFloat("animSpeed", speed);
     }
 }

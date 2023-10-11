@@ -33,9 +33,9 @@ public class Agent : MonoBehaviour
     {
         if (playerHP > 0)
         {
-            if (AttackStarted)
-                agentAnimations.PlayAttack();
-            weaponParent.PerformAnAttack(AttackStarted);
+            var canAttack = AttackStarted && !agentAnimations.isRolling;
+            agentAnimations.PlayAttack(canAttack);
+            weaponParent.PerformAnAttack(canAttack);
         }
     }
     public void PeformRoll()
@@ -63,11 +63,14 @@ public class Agent : MonoBehaviour
     {
         if (playerHP > 0)
         {
-            agentMover.MovementInput = movementInput;
+            var moveDir = movementInput;
+            if (agentAnimations.isRolling)
+                moveDir.x = pointerInput.x > transform.position.x ? 1 : -1;
+            agentMover.MovementInput = moveDir;
             weaponParent.PointerPosition = pointerInput;
 
             agentAnimations.RotateToPointer(pointerInput);
-            agentAnimations.PlayAnimation(movementInput);
+            agentAnimations.PlayAnimation(moveDir);
         }
     }
 
