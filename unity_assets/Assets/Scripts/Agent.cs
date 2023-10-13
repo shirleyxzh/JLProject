@@ -13,6 +13,7 @@ public class Agent : MonoBehaviour
     public string CanAttackByType;
     public Transform AttackPoint;
 
+    // set by PlayerInput and EnemyAI
     public UnityEvent<int, int> OnAttacked { get; set; } = new UnityEvent<int, int>();
 
     private AgentAnimations agentAnimations;
@@ -28,6 +29,7 @@ public class Agent : MonoBehaviour
     private int playerHits;
     private int playerHP;
     public int GetHP { get => playerHP; }
+    public Vector3 GetPostion { get => transform.position; }
 
     public void PeformAttack(bool AttackStarted) 
     {
@@ -45,6 +47,8 @@ public class Agent : MonoBehaviour
     }
     private void Awake()
     {
+        playerHits = 0;
+        playerHP = StartingHP;
         agentMover = GetComponent<AgentMover>();
         agentAnimations = GetComponent<AgentAnimations>();
         weaponParent = GetComponentInChildren<WeaponParent>();
@@ -52,9 +56,6 @@ public class Agent : MonoBehaviour
 
     private void Start()
     {
-        playerHits = 0;
-        playerHP = StartingHP;
-        OnAttacked?.Invoke(playerHits, playerHP);           // starting hits and HP
         agentAnimations.PlayAnimation(Vector2.zero);        // start idle
         agentAnimations.RotateToPointer(Vector2.right);     // start looking right
     }
@@ -76,7 +77,7 @@ public class Agent : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == CanAttackByType && playerHP > 0)
+        if (other.tag == CanAttackByType && playerHP > 0 && !agentAnimations.isRolling)
         {
             playerHits++;
             var bullet = other.GetComponent<Bullet>();

@@ -16,15 +16,15 @@ public class EnemySpawner : MonoBehaviour
     ParticleSystem explosionParticleSystem;
 
     [SerializeField]
-    private TextMeshProUGUI hudKills;
+    private GridMgr gridMgr;
 
     [SerializeField]
     private Vector3[] spawnPoints;
 
-    private int kills;
     private int spawned;
     private float spawnTimer;
     private int spawnPointIdx;
+    private PlayerInput playerInput;
     private PlayerSpawner playerSpawner;
 
     private void Awake()
@@ -33,9 +33,9 @@ public class EnemySpawner : MonoBehaviour
     }
     private void Start()
     {
-        kills = 0;
         spawned = 0;
         spawnPointIdx = Random.Range(0, spawnPoints.Length);
+        playerInput = playerSpawner.player.GetComponent<PlayerInput>();
     }
 
     private void Update()
@@ -54,7 +54,7 @@ public class EnemySpawner : MonoBehaviour
     private void SpawnEnemy()
     {
         var mask = LayerMask.GetMask("enemy") | LayerMask.GetMask("player");
-        var pos = spawnPoints[spawnPointIdx++ % spawnPoints.Length];
+        var pos = spawnPoints[spawnPointIdx++ % spawnPoints.Length] + gridMgr.GetPosition;
         var spaceTaken = Physics.CheckSphere(pos, 1f, mask);
         if (!spaceTaken)
         {
@@ -72,9 +72,8 @@ public class EnemySpawner : MonoBehaviour
 
     void EnemyDied()
     {
-        kills++;
         spawned--;
-        hudKills.text = $"Kills: {kills}";
+        playerInput.EnemyKilled();
     }
 
     void EnemyHit(int hits, int hp)

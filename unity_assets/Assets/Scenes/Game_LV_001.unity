@@ -21690,7 +21690,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ParallaxOff: 0
 --- !u!1001 &1754843230
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27316,7 +27315,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ParallaxOff: 0
 --- !u!4 &553071676861052015
 Transform:
   m_ObjectHideFlags: 0
@@ -27429,7 +27427,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallHeight: 0.8
-  combineRooms: 1
 --- !u!1 &1654506276360685572
 GameObject:
   m_ObjectHideFlags: 0
@@ -27464,7 +27461,7 @@ MonoBehaviour:
     type: 3}
   TotolToSpawn: 1
   explosionParticleSystem: {fileID: 6970436264064202151}
-  hudKills: {fileID: 143753062582597598}
+  gridMgr: {fileID: 1105170715555798111}
   spawnPoints:
   - {x: 1, y: 1, z: 0}
 --- !u!224 &1963157919722383337
@@ -27519,7 +27516,9 @@ MonoBehaviour:
     type: 3}
   spawnPoint: {x: 0, y: 0, z: 0}
   hud: {fileID: 7024793912308302935}
+  hudKills: {fileID: 143753062582597598}
   Camera: {fileID: 739101403874571279}
+  gridMgr: {fileID: 1105170715555798111}
 --- !u!156049354 &2304142446551395501
 Grid:
   m_ObjectHideFlags: 0
@@ -28684,7 +28683,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edb80d473ffdf83468dc37604a0dd7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ParallaxOff: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

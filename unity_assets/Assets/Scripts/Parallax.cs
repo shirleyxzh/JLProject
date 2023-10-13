@@ -6,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 
 public class Parallax : MonoBehaviour
 {
-    public bool ParallaxOff = false;
+    private bool ParallaxOff = false;
 
     public Bounds bounds { get; private set; }
 
@@ -55,7 +55,7 @@ public class Parallax : MonoBehaviour
         var blockers = GetComponentsInChildren<WallBlock>();
         foreach (var wall in blockers)
         {
-            var blocker = new Blocker(wall.transform, wall.transform.position);
+            var blocker = new Blocker(wall.transform, wall.transform.localPosition);
             this.blockers.Add(blocker);
         }
 
@@ -145,8 +145,8 @@ public class Parallax : MonoBehaviour
 
         foreach (var blocker in blockers)
         {
-            var step = (Quaternion.Euler(blocker.pos.rotation.eulerAngles) * offset) / blocker.pos.localScale.y;
-            blocker.pos.position = blocker.center + step;
+            var step = (Quaternion.Euler(blocker.pos.localEulerAngles) * offset) / blocker.pos.localScale.y;
+            blocker.pos.localPosition = blocker.center + step;
         }
     }
 }

@@ -14,17 +14,23 @@ public class PlayerInput : MonoBehaviour
     public UnityEvent OnRoll;
 
     [SerializeField]
-    private InputActionReference movement, attack, pointerPosition, roll;
+    private InputActionReference movement, attack, pointerPosition, roll, rotRoomCW, rotRoomCCW;
+
+    // callbacks to rotate room - set by PlayerSpawner
+    public UnityEvent<bool> RotRoomCB { get; set; } = new UnityEvent<bool>();
 
     // callbacks to update HUD - set by PlayerSpawner
     public UnityEvent<int, int> HitCB { get; set; } = new UnityEvent<int, int>();
+    public UnityEvent<int> KillsCB { get; set; } = new UnityEvent<int>();
     public UnityEvent DeathCB { get; set; } = new UnityEvent();
 
     private Vector3 lastPointerVal = Vector3.zero;
     private bool continueAttack = false;
+    private int kills = 0;
 
     private void Start()
     {
+        kills = 0;
         var agent = GetComponent<Agent>();
         agent.OnAttacked.AddListener(WasAttacked);
     }
@@ -34,6 +40,8 @@ public class PlayerInput : MonoBehaviour
         attack.action.started += PerformAttack;
         attack.action.canceled += StopAttack;
         roll.action.started += PerformRoll;
+        rotRoomCW.action.started += RotateCW;
+        rotRoomCCW.action.started += RotateCCW;
     }
 
     private void OnDisable()
@@ -41,6 +49,8 @@ public class PlayerInput : MonoBehaviour
         attack.action.started -= PerformAttack;
         attack.action.canceled -= StopAttack;
         roll.action.started -= PerformRoll;
+        rotRoomCW.action.started -= RotateCW;
+        rotRoomCCW.action.started -= RotateCCW;
     }
 
     void Update()
@@ -88,6 +98,14 @@ public class PlayerInput : MonoBehaviour
     {
         OnRoll?.Invoke();
     }
+    private void RotateCW(InputAction.CallbackContext context)
+    {
+        RotRoomCB?.Invoke(true);
+    }
+    private void RotateCCW(InputAction.CallbackContext context)
+    {
+        RotRoomCB?.Invoke(false);
+    }
 
     public void WasAttacked(int hits, int hp)
     {
@@ -96,5 +114,11 @@ public class PlayerInput : MonoBehaviour
         {
             DeathCB?.Invoke();
         }
+    }
+
+    public void EnemyKilled()
+    {
+        kills++;
+        KillsCB?.Invoke(kills);
     }
 }
