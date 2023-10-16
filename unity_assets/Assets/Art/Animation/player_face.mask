@@ -28,13 +28,13 @@ AvatarMask:
   - m_Path: cheek_geo
     m_Weight: 0
   - m_Path: ear_geo
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: eye_close_geo
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: eye_normal_geo
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: eye_spin_geo
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: faxce_geo
     m_Weight: 0
   - m_Path: hair_back_geo
@@ -56,13 +56,13 @@ AvatarMask:
   - m_Path: leg_r_u_geo
     m_Weight: 0
   - m_Path: moth_happy_geo
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: moth_open_geo
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: mouth_o_geo
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: mouth_sad_geo
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: ribbin_geo2
     m_Weight: 0
   - m_Path: root_joint
