@@ -9,15 +9,12 @@ using UnityEngine.InputSystem;
 
 public class PlayerInput : MonoBehaviour
 {
-    public UnityEvent<Vector2> OnMovementInput, OnPointerInput;
-    public UnityEvent<bool> OnAttack;
-    public UnityEvent OnRoll;
-
     [SerializeField]
     private InputActionReference movement, attack, pointerPosition, roll, rotRoomCW, rotRoomCCW;
 
     // callbacks to rotate room - set by PlayerSpawner
     public UnityEvent<bool> RotRoomCB { get; set; } = new UnityEvent<bool>();
+    public Transform gridProxy { get; set; }
 
     // callbacks to update HUD - set by PlayerSpawner
     public UnityEvent<int, int> HitCB { get; set; } = new UnityEvent<int, int>();
@@ -28,11 +25,13 @@ public class PlayerInput : MonoBehaviour
     private bool continueAttack = false;
     private int kills = 0;
 
+    private Agent thisPlayer;
+
     private void Start()
     {
         kills = 0;
-        var agent = GetComponent<Agent>();
-        agent.OnAttacked.AddListener(WasAttacked);
+        thisPlayer = GetComponent<Agent>();
+        thisPlayer.OnAttacked.AddListener(WasAttacked);
     }
 
     private void OnEnable()
@@ -55,10 +54,14 @@ public class PlayerInput : MonoBehaviour
 
     void Update()
     {
-        OnMovementInput?.Invoke(movement.action.ReadValue<Vector2>().normalized);
-        OnPointerInput?.Invoke(GetPointerInput());
+        transform.position = gridProxy.position;
+
+        thisPlayer.PointerInput = GetPointerInput();
+        thisPlayer.OnMovementInput(movement.action.ReadValue<Vector2>().normalized);
         if (continueAttack)
-            OnAttack?.Invoke(true);
+            thisPlayer.PerformAttack(true);
+
+        gridProxy.position = transform.position;
     }
 
     private Vector2 GetPointerInput()
@@ -87,16 +90,16 @@ public class PlayerInput : MonoBehaviour
     private void PerformAttack(InputAction.CallbackContext context)
     {
         continueAttack = true;
-        OnAttack?.Invoke(true);
+        thisPlayer.PerformAttack(true);
     }
     private void StopAttack(InputAction.CallbackContext context)
     {
         continueAttack = false;
-        OnAttack?.Invoke(false);
+        thisPlayer.PerformAttack(false);
     }
     private void PerformRoll(InputAction.CallbackContext context)
     {
-        OnRoll?.Invoke();
+        thisPlayer.PeformRoll();
     }
     private void RotateCW(InputAction.CallbackContext context)
     {

@@ -15,14 +15,13 @@ public class Agent : MonoBehaviour
 
     // set by PlayerInput and EnemyAI
     public UnityEvent<int, int> OnAttacked { get; set; } = new UnityEvent<int, int>();
+    public Transform destProxy { get; set; }
 
     private AgentAnimations agentAnimations;
     private AgentMover agentMover;
 
-    private Vector2 pointerInput, movementInput;
-
+    private Vector2 pointerInput;
     public Vector2 PointerInput { get => pointerInput; set => pointerInput = value; }
-    public Vector2 MovementInput { get => movementInput; set => movementInput = value; }
 
     private WeaponParent weaponParent;
 
@@ -31,24 +30,34 @@ public class Agent : MonoBehaviour
     public int GetHP { get => playerHP; }
     public Vector3 GetPostion { get => transform.position; }
 
-    public void PeformAttack(bool AttackStarted) 
+    private float pushBackTimer;
+    private Vector3 pushBackDir;
+
+    public void PerformAttack(bool AttackStarted) 
     {
         if (playerHP > 0)
         {
-            var canAttack = AttackStarted && !agentAnimations.isRolling;
+            var canAttack = AttackStarted && ActionsAllowed();
             agentAnimations.PlayAttack(canAttack);
             weaponParent.PerformAnAttack(canAttack);
         }
     }
+
     public void PeformRoll()
     {
-        if (playerHP > 0)
+        if (playerHP > 0 && ActionsAllowed())
             agentAnimations.PlayRoll();
+    }
+    private bool ActionsAllowed()
+    {
+        return !(agentAnimations.isRolling || pushBackTimer > 0);
     }
     private void Awake()
     {
         playerHits = 0;
+        pushBackTimer = 0;
         playerHP = StartingHP;
+
         agentMover = GetComponent<AgentMover>();
         agentAnimations = GetComponent<AgentAnimations>();
         weaponParent = GetComponentInChildren<WeaponParent>();
@@ -60,36 +69,68 @@ public class Agent : MonoBehaviour
         agentAnimations.RotateToPointer(Vector2.right);     // start looking right
     }
 
-    private void Update()
+    public void OnMovementInput(Vector3 movementInput)
     {
         if (playerHP > 0)
         {
             var moveDir = movementInput;
-            if (agentAnimations.isRolling)
+            if (pushBackTimer > 0)
+            {
+                pushBackTimer = Mathf.Clamp01(pushBackTimer - Time.deltaTime);
+                pushBackDir = (destProxy.position - transform.position).normalized;
+                //Debug.DrawRay(transform.position, pushBackDir, Color.white);
+                moveDir = pushBackDir;
+            }
+            else if (agentAnimations.isRolling)
+            {
                 moveDir.x = pointerInput.x > transform.position.x ? 1 : -1;
-            agentMover.MovementInput = moveDir;
+            }
+            agentMover.MovementInput(moveDir);
             weaponParent.PointerPosition = pointerInput;
 
             agentAnimations.RotateToPointer(pointerInput);
             agentAnimations.PlayAnimation(moveDir);
         }
+        else if (pushBackTimer > 0)
+        {
+            pushBackDir = (destProxy.position - transform.position).normalized;
+            pushBackTimer = Mathf.Clamp01(pushBackTimer - Time.deltaTime);
+            agentMover.MovementInput(pushBackDir);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == CanAttackByType && playerHP > 0 && !agentAnimations.isRolling)
+        if (other.tag == CanAttackByType)
         {
-            playerHits++;
-            var bullet = other.GetComponent<Bullet>();
-            playerHP = Mathf.Max(playerHP - bullet.damage, 0);
-            OnAttacked?.Invoke(playerHits, playerHP);
-            bullet.RemoveWithVFX(AttackPoint.position);
-            if (playerHP == 0)
+            if (playerHP > 0 && !agentAnimations.isRolling)
             {
-                agentMover.MovementInput = Vector3.zero;
-                weaponParent.PerformAnAttack(false);
-                agentAnimations.PlayDead();
+                playerHits++;
+                var bullet = other.GetComponent<Bullet>();
+                playerHP = Mathf.Max(playerHP - bullet.damage, 0);
+                OnAttacked?.Invoke(playerHits, playerHP);
+                bullet.RemoveWithVFX(AttackPoint.position);
+                if (playerHP == 0)
+                {
+                    agentMover.MovementInput(Vector3.zero);
+                    weaponParent.PerformAnAttack(false);
+                    agentAnimations.PlayDead();
+                }
             }
+        }
+        else if (other.tag == "wall")
+        {
+            var collisionPoint = other.ClosestPoint(transform.position);
+            var direction = (transform.position - collisionPoint).normalized;
+            if (direction == Vector3.zero)
+                direction = Vector3.up;
+
+            if (pushBackTimer > 0)
+                direction += pushBackDir;
+
+            pushBackTimer = 0.5f;
+            pushBackDir = direction;
+            destProxy.position = transform.position + pushBackDir;
         }
     }
 }

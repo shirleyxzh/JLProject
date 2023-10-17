@@ -20,13 +20,14 @@ public class BulletSpawner : MonoBehaviour
     float[] rotations;
     void Start()
     {
-        timer = GetSpawnData().cooldown;
+        timer = 0;
         spawnAutomatically = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        timer -= Time.deltaTime;
         if (spawnAutomatically)
         {
             if (timer <= 0)
@@ -44,7 +45,6 @@ public class BulletSpawner : MonoBehaviour
                 }
                 rotations = new float[GetSpawnData().numberOfBullets];
             }
-            timer -= Time.deltaTime;
         }
     }
 

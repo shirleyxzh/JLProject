@@ -19,13 +19,14 @@ public class EnemySpawner : MonoBehaviour
     private GridMgr gridMgr;
 
     [SerializeField]
-    private Vector3[] spawnPoints;
+    private Transform[] spawnPoints;
 
     private int spawned;
     private float spawnTimer;
     private int spawnPointIdx;
     private PlayerInput playerInput;
     private PlayerSpawner playerSpawner;
+    private Agent agent;
 
     private void Awake()
     {
@@ -35,7 +36,7 @@ public class EnemySpawner : MonoBehaviour
     {
         spawned = 0;
         spawnPointIdx = Random.Range(0, spawnPoints.Length);
-        playerInput = playerSpawner.player.GetComponent<PlayerInput>();
+        playerInput = playerSpawner.agent.GetComponent<PlayerInput>();
     }
 
     private void Update()
@@ -54,18 +55,23 @@ public class EnemySpawner : MonoBehaviour
     private void SpawnEnemy()
     {
         var mask = LayerMask.GetMask("enemy") | LayerMask.GetMask("player");
-        var pos = spawnPoints[spawnPointIdx++ % spawnPoints.Length] + gridMgr.GetPosition;
+        var pos = spawnPoints[spawnPointIdx++ % spawnPoints.Length].position + Vector3.back;
         var spaceTaken = Physics.CheckSphere(pos, 1f, mask);
         if (!spaceTaken)
         {
             var obj = Instantiate(EnemyPrefab);
             obj.transform.position = pos;
 
-            var spawnedEnemy = obj.GetComponent<EnemyAI>();
-            spawnedEnemy.explosionParticleSystem = explosionParticleSystem;
-            spawnedEnemy.player = playerSpawner.player;
-            spawnedEnemy.DeathCB.AddListener(EnemyDied);
-            spawnedEnemy.HitCB.AddListener(EnemyHit);
+            agent = obj.GetComponent<Agent>();
+            var enemy = obj.GetComponent<EnemyAI>();
+            enemy.explosionParticleSystem = explosionParticleSystem;
+            enemy.player = playerSpawner.agent;
+            enemy.DeathCB.AddListener(EnemyDied);
+            enemy.HitCB.AddListener(EnemyHit);
+
+            enemy.gridProxy = gridMgr.CreateProxy(pos);
+            agent.destProxy = gridMgr.CreateProxy(pos);
+            
             spawned++;
         }
     }

@@ -9,7 +9,7 @@ public class PlayerSpawner : MonoBehaviour
     private GameObject PlayerPrefab;
 
     [SerializeField]
-    private Vector3 spawnPoint;
+    private Transform spawnPoint;
 
     [SerializeField]
     private TextMeshProUGUI hud;
@@ -23,27 +23,31 @@ public class PlayerSpawner : MonoBehaviour
     [SerializeField]
     private GridMgr gridMgr;
 
-    public Agent player { get; private set; }
+    public Agent agent { get; private set; }
 
     private void Awake()
     {
         var obj = Instantiate(PlayerPrefab);
-        obj.transform.position = spawnPoint;
+        var pos = spawnPoint.position + Vector3.back;
+        obj.transform.position = pos;
 
         Camera.Player = obj;
 
-        player = obj.GetComponent<Agent>(); ;
-        var pi = player.GetComponent<PlayerInput>();
+        agent = obj.GetComponent<Agent>();
+        var pi = agent.GetComponent<PlayerInput>();
         pi.KillsCB.AddListener(EnemiesKilled);
         pi.DeathCB.AddListener(PlayerDied);
         pi.RotRoomCB.AddListener(RotRoom);
         pi.HitCB.AddListener(PlayerHUD);
+
+        pi.gridProxy = gridMgr.CreateProxy(pos);
+        agent.destProxy = gridMgr.CreateProxy(pos);
     }
 
     private void Start()
     {
         EnemiesKilled(0);
-        PlayerHUD(0, player.GetHP);
+        PlayerHUD(0, agent.GetHP);
     }
 
     void Update()
@@ -74,6 +78,6 @@ public class PlayerSpawner : MonoBehaviour
 
     void RotRoom(bool rotCW)
     {
-        gridMgr.Rotate(rotCW, player.GetPostion);
+        gridMgr.Rotate(rotCW, agent.GetPostion);
     }
 }

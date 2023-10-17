@@ -6,9 +6,6 @@ using UnityEngine.Events;
 
 public class EnemyAI : MonoBehaviour
 {
-    public UnityEvent<Vector2> OnMovementInput, OnPointerInput;
-    public UnityEvent<bool> OnAttack;
-
     [SerializeField, Min(0)]
     int explosionParticleCount = 50;
 
@@ -24,6 +21,7 @@ public class EnemyAI : MonoBehaviour
 
 
     public Agent player { get; set; }
+    public Transform gridProxy { get; set; }
     public ParticleSystem explosionParticleSystem { get; set; }
 
     private bool isDead = false;
@@ -41,6 +39,8 @@ public class EnemyAI : MonoBehaviour
     }
     private void Update()
     {
+        transform.position = gridProxy.position;
+
         var enemyPos = thisEnemy.AttackPoint.position;
         var playerPos = player.AttackPoint.position;
 
@@ -59,6 +59,8 @@ public class EnemyAI : MonoBehaviour
                         },
                         explosionParticleCount
                     );
+                    Destroy(thisEnemy.destProxy.gameObject);
+                    Destroy(gridProxy.gameObject);
                     Destroy(gameObject);
                 }
             }
@@ -68,8 +70,8 @@ public class EnemyAI : MonoBehaviour
         if (player.GetHP == 0)
         {
             // player is dead
-            OnAttack?.Invoke(false);
-            OnMovementInput?.Invoke(Vector2.zero);
+            thisEnemy.PerformAttack(false);
+            thisEnemy.OnMovementInput(Vector2.zero);
             return;
         }
 
@@ -87,43 +89,45 @@ public class EnemyAI : MonoBehaviour
             lastSeenValid = true;
             lastSeenPosition = playerPos;
 
-            OnPointerInput?.Invoke(playerPos);
+            thisEnemy.PointerInput = playerPos;
             if (dist <= attackDist)
             {
                 // attack player
-                OnMovementInput?.Invoke(Vector2.zero);
+                thisEnemy.OnMovementInput(Vector2.zero);
                 if (passedTime >= attackDelay)
                 {
                     passedTime = 0;
-                    OnAttack?.Invoke(true);
+                    thisEnemy.PerformAttack(true);
                 }
             }
             else
             {
                 // chasing player
-                OnAttack?.Invoke(false);
+                thisEnemy.PerformAttack(false);
                 Vector2 dir = playerPos - enemyPos;
-                OnMovementInput?.Invoke(dir.normalized);
+                thisEnemy.OnMovementInput(dir.normalized);
             }
         }
         else if (lastSeenValid)
         {
             // move close to last known pos
-            OnAttack?.Invoke(false);
+            thisEnemy.PerformAttack(false);
             Vector2 dir = lastSeenPosition - enemyPos;
-            OnMovementInput?.Invoke(dir.normalized);
+            thisEnemy.OnMovementInput(dir.normalized);
 
             dist = Vector2.Distance(lastSeenPosition, enemyPos);
             lastSeenValid = dist > attackDist / 3;
         }
         else
         {
-            OnAttack?.Invoke(false);
-            OnMovementInput?.Invoke(Vector2.zero);
+            thisEnemy.PerformAttack(false);
+            thisEnemy.OnMovementInput(Vector2.zero);
         }
 
         if (passedTime < attackDelay)
             passedTime += Time.deltaTime;
+
+        gridProxy.position = transform.position;
     }
 
     public void WasAttacked(int hits, int hp)
@@ -133,8 +137,8 @@ public class EnemyAI : MonoBehaviour
         {
             isDead = true;
             DeathCB?.Invoke();
-            OnAttack?.Invoke(false);
-            OnMovementInput?.Invoke(Vector2.zero);
+            thisEnemy.PerformAttack(false);
+            thisEnemy.OnMovementInput(Vector2.zero);
         }
     }
 }

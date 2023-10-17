@@ -9,38 +9,29 @@ public class AgentMover : MonoBehaviour
     [SerializeField]
     private float maxSpeed = 2;
     
-    public Vector3 MovementInput { get;set; }
-
     private int savedLayer;
     private int defaultLayer;
     private int testMask;
 
     private BoxCollider boxCol;
-    private Vector3 xStep = Vector3.right * 0.16f;
-    private Vector3 yStep = Vector3.up * 0.05f;
-
-    private bool fixupForNav;
+    private float wallGap = 0.1f;
 
     private void Awake()
     {
         savedLayer = gameObject.layer;
+        boxCol = GetComponent<BoxCollider>();
         defaultLayer = LayerMask.NameToLayer("Default");
         testMask = LayerMask.GetMask("enemy") | LayerMask.GetMask("wall");  // | LayerMask.GetMask("floor");
-
-        fixupForNav = true;
     }
 
-    private void LateUpdate()
+    public void MovementInput(Vector3 direction)
     {
-        if (fixupForNav) 
-            FixupForNav();
-
-        var step = MovementInput * maxSpeed * Time.deltaTime;
+        var step = direction * maxSpeed * Time.deltaTime;
         var pos = transform.position;
         var newPos = pos + step;
         gameObject.layer = defaultLayer;
 
-        var dx = Mathf.Abs(step.x) + 0.05f;
+        var dx = Mathf.Abs(step.x) + wallGap;
         var dir = step.x < 0 ? Vector3.left : Vector3.right;
         var off1 = dir * dx;
         var off2 = dir * (boxCol.bounds.size.x + dx);
@@ -49,7 +40,7 @@ public class AgentMover : MonoBehaviour
         if (testEdge(p1, p2, off1, off2))
             newPos.x = pos.x;
 
-        var dy = Mathf.Abs(step.y) + 0.05f;
+        var dy = Mathf.Abs(step.y) + wallGap;
         dir = step.y < 0 ? Vector3.down : Vector3.up;
         off1 = dir * dy;
         off2 = dir * (boxCol.bounds.size.y + dy);
@@ -67,12 +58,5 @@ public class AgentMover : MonoBehaviour
     {
         var hit = Physics.Linecast(p1, p1 + off1, testMask) || Physics.Linecast(p2, p2 + off2, testMask);
         return hit;
-    }
-
-    private void FixupForNav()
-    {
-        fixupForNav = false;
-        transform.Translate(Vector3.back);
-        boxCol = GetComponent<BoxCollider>();
     }
 }
