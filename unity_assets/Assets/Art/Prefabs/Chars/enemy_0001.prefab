@@ -186,6 +186,11 @@ PrefabInstance:
       propertyPath: StartingHP
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 5735721408641789009, guid: 38216425956a5b7428b420aa63784422,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.409
+      objectReference: {fileID: 0}
     - target: {fileID: 6150974324830398929, guid: 38216425956a5b7428b420aa63784422,
         type: 3}
       propertyPath: m_LocalPosition.x

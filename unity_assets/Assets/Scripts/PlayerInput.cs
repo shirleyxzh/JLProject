@@ -70,7 +70,8 @@ public class PlayerInput : MonoBehaviour
         if (ponterVal == Vector3.zero)
             ponterVal = lastPointerVal;     // no new input - use last val
 
-        if (ponterVal.x > 1 || ponterVal.y > 1)
+        Cursor.visible = ponterVal.x > 1 || ponterVal.y > 1;
+        if (Cursor.visible)
         {
             // assume mouse input
             lastPointerVal = ponterVal;
@@ -83,7 +84,7 @@ public class PlayerInput : MonoBehaviour
             ponterVal = lastPointerVal;
         else
             lastPointerVal = ponterVal;
-        var pos = ponterVal + transform.position;
+        var pos = ponterVal + thisPlayer.EyeLevel.position;
         return pos;
     }
 

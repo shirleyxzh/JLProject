@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class AgentAnimations : MonoBehaviour
 {
+    public Transform eyeLevel { get; set; }
+
     private Animator animator;
     private float moveDir;
     private float lookDirX;
@@ -23,9 +25,10 @@ public class AgentAnimations : MonoBehaviour
     public void RotateToPointer(Vector2 lookAt)
     {
         lookDirX = lookAt.x > transform.position.x ? 1 : -1;
-        lookDirY = Mathf.Clamp(lookAt.y - transform.position.y, -1f, 1f);
+        lookDirY = Mathf.Clamp(lookAt.y - eyeLevel.position.y, -1f, 1f);
         animator.SetFloat("move_x", lookDirX);
         animator.SetFloat("move_y", lookDirY);
+        animator.SetFloat("eye_y", lookDirY);
     }
 
     public void PlayAnimation(Vector2 moveTo)

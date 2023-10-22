@@ -12,6 +12,7 @@ public class Agent : MonoBehaviour
     [TagSelector]
     public string CanAttackByType;
     public Transform AttackPoint;
+    public Transform EyeLevel;
 
     // set by PlayerInput and EnemyAI
     public UnityEvent<int, int> OnAttacked { get; set; } = new UnityEvent<int, int>();
@@ -61,6 +62,8 @@ public class Agent : MonoBehaviour
         agentMover = GetComponent<AgentMover>();
         agentAnimations = GetComponent<AgentAnimations>();
         weaponParent = GetComponentInChildren<WeaponParent>();
+
+        agentAnimations.eyeLevel = EyeLevel;
     }
 
     private void Start()

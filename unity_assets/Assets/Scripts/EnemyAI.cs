@@ -81,7 +81,7 @@ public class EnemyAI : MonoBehaviour
         {
             // check line of site
             var mask = LayerMask.GetMask("wall");
-            canSeePlayer = !Physics.Linecast(enemyPos, playerPos, mask);
+            canSeePlayer = !Physics.Linecast(thisEnemy.EyeLevel.position, playerPos, mask);
         }
 
         if (canSeePlayer)
