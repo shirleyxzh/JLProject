@@ -126,7 +126,7 @@ public class Agent : MonoBehaviour
             var collisionPoint = other.ClosestPoint(transform.position);
             var direction = (transform.position - collisionPoint).normalized;
             if (direction == Vector3.zero)
-                direction = Vector3.up;
+                direction = Vector3.up * 0.5f;
 
             if (pushBackTimer > 0)
                 direction += pushBackDir;
