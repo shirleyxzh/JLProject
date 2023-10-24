@@ -6,6 +6,8 @@ public class BlockerMaker : MonoBehaviour
 #if UNITY_EDITOR
     public GameObject blockerPrefab;
 
+    private static float WALL_THICKNESS = 0.6f;
+
     public GameObject createObject()
     {
         // delete blockers base obj
@@ -73,7 +75,7 @@ public class BlockerMaker : MonoBehaviour
                         bboxes.Remove(box);
                 }
 
-                bbox.Expand(0.6f);
+                bbox.Expand(WALL_THICKNESS);
                 CreateBlocker(bbox, wallsObj, "wall");
                 //CreateBlocker(bbox, floorObj, "floor");
             }
