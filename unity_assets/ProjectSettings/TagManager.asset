@@ -4,11 +4,16 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - wall
   - playerBullet
   - enemyBullet
   - Enemy
   - weapon
+  - blocker
+  - corner
+  - floor
+  - wall
+  - nitch
+  - outline
   layers:
   - Default
   - TransparentFX
@@ -17,11 +22,11 @@ TagManager:
   - Water
   - UI
   - bullet
-  - wall
+  - blocker
   - floor
   - attackPoint
   - player
-  - 
+  - parallax
   - 
   - 
   - 

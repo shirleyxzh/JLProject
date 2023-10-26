@@ -6,12 +6,35 @@ using UnityEngine.Rendering.Universal;
 
 public class Parallax : MonoBehaviour
 {
-    private bool ParallaxOff = false;
+    public bool ParallaxOff { get; set; } = false;
 
     public Bounds bounds { get; private set; }
 
-    private MeshFilter[] meshes;
-    private Dictionary<string, Vector3[]> meshList = new Dictionary<string, Vector3[]>();
+    public enum MeshTypes
+    {
+        cornerLL,
+        cornerLR,
+        cornerUL,
+        cornerUR,
+        nitchLL,
+        nitchLR,
+        nitchUL,
+        nitchUR,
+        wallLeft,
+        wallRight,
+        wallTop,
+        wallBottom,
+        outline
+    }
+    struct meshInfo
+    {
+        public MeshFilter mesh;
+        public MeshTypes meshType;
+        public string meshTag;
+    };
+
+    private List<meshInfo> meshList = new List<meshInfo>();
+    private Dictionary<string, Vector3[]> vertList = new Dictionary<string, Vector3[]>();
 
     struct Blocker
     {
@@ -20,28 +43,35 @@ public class Parallax : MonoBehaviour
         public Blocker(Transform p, Vector3 c) { pos = p; center = c; }
     };
     private List<Blocker> blockers = new List<Blocker>();
-
+    
     private Connector isConnector;
 
     private void Awake()
     {
         isConnector = GetComponent<Connector>();
+        var layer = LayerMask.NameToLayer("parallax");
 
         bool emptyBBox = true;
         Bounds bbox = new Bounds();
-        meshes = GetComponentsInChildren<MeshFilter>();
-        foreach (var wall in meshes)
+        var meshes = GetComponentsInChildren<MeshFilter>();
+        foreach (var mesh in meshes)
         {
-            var name = wall.gameObject.name;
-            if (!name.Contains("floor"))
-            {
-                if (!meshList.ContainsKey(name))
-                    meshList[name] = wall.sharedMesh.vertices;
-            }
+            if (mesh.gameObject.layer != layer)
+                continue;
 
-            if (!name.Contains("roof"))
+            var tag = mesh.gameObject.tag;
+            var info = new meshInfo();
+            info.mesh = mesh;
+            info.meshTag = tag;
+            info.meshType = GetMeshType(mesh, tag);
+            meshList.Add(info);
+
+            if (!vertList.ContainsKey(tag))
+                vertList[tag] = mesh.sharedMesh.vertices;
+
+            if (!tag.Contains("outline"))
             {
-                var pos = wall.transform.position;
+                var pos = mesh.transform.position;
                 if (emptyBBox)
                 {
                     bbox.center = pos;
@@ -53,9 +83,9 @@ public class Parallax : MonoBehaviour
         }
 
         var blockers = GetComponentsInChildren<WallBlock>();
-        foreach (var wall in blockers)
+        foreach (var _b in blockers)
         {
-            var blocker = new Blocker(wall.transform, wall.transform.localPosition);
+            var blocker = new Blocker(_b.transform, _b.transform.localPosition);
             this.blockers.Add(blocker);
         }
 
@@ -71,6 +101,35 @@ public class Parallax : MonoBehaviour
             bbox.Expand(Vector3.one);
         }
         bounds = bbox;
+    }
+
+    private MeshTypes GetMeshType(MeshFilter mesh, string tag)
+    {
+        // determine the type based on rotation
+        var rotY = mesh.transform.localEulerAngles.y;
+        if (tag.Contains("corner"))
+        {
+            if (rotY == 0) return MeshTypes.cornerLR;
+            if (rotY == 90) return MeshTypes.cornerUR;
+            if (rotY == 180) return MeshTypes.cornerUL;
+            return MeshTypes.cornerLL;
+        }
+        else if (tag.Contains("nitch"))
+        {
+            if (rotY == 0) return MeshTypes.nitchLR;
+            if (rotY == 90) return MeshTypes.nitchUR;
+            if (rotY == 180) return MeshTypes.nitchUL;
+            return MeshTypes.nitchLL;
+        }
+        else if (tag.Contains("wall"))
+        {
+            if (rotY == 0) return MeshTypes.wallBottom;
+            if (rotY == 90) return MeshTypes.wallRight;
+            if (rotY == 180) return MeshTypes.wallTop;
+            return MeshTypes.wallLeft;
+        }
+        // assume outline
+        return MeshTypes.outline;
     }
 
     public bool InsideBounds(Vector3 pos, out Vector3 offset)
@@ -114,18 +173,18 @@ public class Parallax : MonoBehaviour
         return (pos - center) / extents;
     }
 
-    private void adjustVerts(MeshFilter wall, Vector3[] mesh, Vector3 step)
+    private void adjustVerts(MeshFilter mf, Vector3[] verts, Vector3 step)
     {
-        var vertices = wall.mesh.vertices;
-        for (int i = 0; i < mesh.Length; i++)
+        var vertices = mf.mesh.vertices;
+        for (int i = 0; i < verts.Length; i++)
         {
-            var vert = mesh[i];
+            var vert = verts[i];
             if (vert.y > 0)
                 vertices[i] = vert + step;
         }
-        wall.mesh.vertices = vertices;
-        wall.mesh.RecalculateBounds();
-        wall.mesh.RecalculateNormals();
+        mf.mesh.vertices = vertices;
+        mf.mesh.RecalculateBounds();
+        mf.mesh.RecalculateNormals();
     }
 
     public void OnUpdate(Vector3 offset)
@@ -133,14 +192,11 @@ public class Parallax : MonoBehaviour
         if (ParallaxOff)
             offset = Vector3.zero;
 
-        foreach (var wall in meshes)
+        foreach (var info in meshList)
         {
-            var name = wall.gameObject.name;
-            if (meshList.ContainsKey(name))
-            {
-                var step = (Quaternion.Euler(wall.transform.localEulerAngles) * offset) / wall.transform.localScale.y;
-                adjustVerts(wall, meshList[name], step);
-            }
+            var mesh = info.mesh;
+            var step = (Quaternion.Euler(mesh.transform.localEulerAngles) * offset) / mesh.transform.localScale.y;
+            adjustVerts(mesh, vertList[info.meshTag], step);
         }
 
         foreach (var blocker in blockers)

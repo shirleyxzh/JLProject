@@ -54,7 +54,7 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        var mask = LayerMask.GetMask("enemy") | LayerMask.GetMask("player");
+        var mask = LayerMask.GetMask("enemy", "player");
         var pos = spawnPoints[spawnPointIdx++ % spawnPoints.Length].position + Vector3.back;
         var spaceTaken = Physics.CheckSphere(pos, 1f, mask);
         if (!spaceTaken)

@@ -32,10 +32,13 @@ public class EnemyAI : MonoBehaviour
     private Vector3 lastSeenPosition;
     private bool lastSeenValid = false;
 
+    private int losMask;
+
     private void Start()
     {
         thisEnemy = GetComponent<Agent>();
         thisEnemy.OnAttacked.AddListener(WasAttacked);
+        losMask = LayerMask.GetMask("blocker");
     }
     private void Update()
     {
@@ -80,8 +83,7 @@ public class EnemyAI : MonoBehaviour
         if (dist < chaseDist)
         {
             // check line of site
-            var mask = LayerMask.GetMask("wall");
-            canSeePlayer = !Physics.Linecast(thisEnemy.EyeLevel.position, playerPos, mask);
+            canSeePlayer = !Physics.Linecast(thisEnemy.EyeLevel.position, playerPos, losMask);
         }
 
         if (canSeePlayer)

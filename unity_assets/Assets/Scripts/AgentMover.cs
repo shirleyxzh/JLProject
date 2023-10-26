@@ -21,7 +21,7 @@ public class AgentMover : MonoBehaviour
         savedLayer = gameObject.layer;
         boxCol = GetComponent<BoxCollider>();
         defaultLayer = LayerMask.NameToLayer("Default");
-        testMask = LayerMask.GetMask("enemy") | LayerMask.GetMask("wall");  // | LayerMask.GetMask("floor");
+        testMask = LayerMask.GetMask("enemy", "blocker");
     }
 
     public void MovementInput(Vector3 direction)

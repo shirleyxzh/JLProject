@@ -85,6 +85,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 666a9e989f847a847a9e37d4df94cd86,
         type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 666a9e989f847a847a9e37d4df94cd86,
+        type: 3}
+      propertyPath: m_TagString
+      value: corner
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 666a9e989f847a847a9e37d4df94cd86,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 8
       objectReference: {fileID: 0}

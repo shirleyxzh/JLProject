@@ -104,7 +104,7 @@ public class Agent : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == CanAttackByType)
+        if (other.CompareTag(CanAttackByType))
         {
             if (playerHP > 0 && !agentAnimations.isRolling)
             {
@@ -121,7 +121,7 @@ public class Agent : MonoBehaviour
                 }
             }
         }
-        else if (other.tag == "wall")
+        else if (other.CompareTag("blocker"))
         {
             var collisionPoint = other.ClosestPoint(transform.position);
             var direction = (transform.position - collisionPoint).normalized;

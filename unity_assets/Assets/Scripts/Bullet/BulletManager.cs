@@ -28,7 +28,7 @@ public class BulletManager : MonoBehaviour
     {
         for (int i = 0; i < bullets.Count; i++)
         {
-            if (!bullets[i].activeSelf && bullets[i].tag == type)
+            if (!bullets[i].activeSelf && bullets[i].CompareTag(type))
             {
                 bullets[i].SetActive(true);
                 return bullets[i];

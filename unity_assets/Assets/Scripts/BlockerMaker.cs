@@ -20,13 +20,11 @@ public class BlockerMaker : MonoBehaviour
         baseObj.transform.SetParent(transform.parent, false);
         var wallsObj = new GameObject("Walls", typeof(Parallax));
         wallsObj.transform.SetParent(baseObj.transform, false);
-        //var floorObj = new GameObject("Floor");
-        //floorObj.transform.SetParent(baseObj.transform, false);
 
         // add blockers to base
         if (blockerPrefab != null)
         {
-            // create a bbox for every active roof tile
+            // create a bbox for every active outline tile
             var bboxes = new List<Bounds>();
             for (int i = 0; i < transform.childCount; i++)
             {
@@ -76,8 +74,7 @@ public class BlockerMaker : MonoBehaviour
                 }
 
                 bbox.Expand(WALL_THICKNESS);
-                CreateBlocker(bbox, wallsObj, "wall");
-                //CreateBlocker(bbox, floorObj, "floor");
+                CreateBlocker(bbox, wallsObj, "blocker");
             }
         }
 

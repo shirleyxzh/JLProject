@@ -5,10 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Tiles.unity
     guid: 49e9352c8d919f847a3fadc3cbb0b426
   - enabled: 0
     path: Assets/Scenes/tile_test.unity
     guid: 5153a9afc692f6c40b2734424eca74b3
+  - enabled: 1
+    path: Assets/Scenes/Rooms.unity
+    guid: 6a109a11a9988864fb072bdf7aed553d
   m_configObjects: {}
