@@ -679,7 +679,7 @@ GameObject:
   - component: {fileID: 26573321}
   m_Layer: 7
   m_Name: blocker
-  m_TagString: wall
+  m_TagString: blocker
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4307,7 +4307,7 @@ GameObject:
   - component: {fileID: 337684224}
   m_Layer: 7
   m_Name: blocker
-  m_TagString: wall
+  m_TagString: blocker
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6429,7 +6429,7 @@ GameObject:
   - component: {fileID: 527947150}
   m_Layer: 7
   m_Name: blocker
-  m_TagString: wall
+  m_TagString: blocker
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8554,7 +8554,7 @@ GameObject:
   - component: {fileID: 747894494}
   m_Layer: 7
   m_Name: blocker
-  m_TagString: wall
+  m_TagString: blocker
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10664,7 +10664,7 @@ GameObject:
   - component: {fileID: 890819692}
   m_Layer: 7
   m_Name: blocker
-  m_TagString: wall
+  m_TagString: blocker
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -12019,7 +12019,7 @@ GameObject:
   - component: {fileID: 1024827608}
   m_Layer: 7
   m_Name: blocker
-  m_TagString: wall
+  m_TagString: blocker
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -18475,7 +18475,7 @@ GameObject:
   - component: {fileID: 1753103763}
   m_Layer: 7
   m_Name: blocker
-  m_TagString: wall
+  m_TagString: blocker
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -22381,7 +22381,7 @@ GameObject:
   - component: {fileID: 2051595927}
   m_Layer: 7
   m_Name: blocker
-  m_TagString: wall
+  m_TagString: blocker
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
