@@ -26,10 +26,12 @@ public class PlayerInput : MonoBehaviour
     private int kills = 0;
 
     private Agent thisPlayer;
+    private bool ready;
 
     private void Start()
     {
         kills = 0;
+        ready = false;
         thisPlayer = GetComponent<Agent>();
         thisPlayer.OnAttacked.AddListener(WasAttacked);
     }
@@ -54,6 +56,9 @@ public class PlayerInput : MonoBehaviour
 
     void Update()
     {
+        if (!ready)
+            return;
+
         transform.position = gridProxy.position;
 
         thisPlayer.PointerInput = GetPointerInput();
@@ -62,6 +67,17 @@ public class PlayerInput : MonoBehaviour
             thisPlayer.PerformAttack(true);
 
         gridProxy.position = transform.position;
+    }
+
+    public void StartLevel()
+    {
+        ready = true;
+        thisPlayer.StartLevel();
+    }
+
+    public void EndLevel()
+    {
+        thisPlayer.EndLevel();
     }
 
     private Vector2 GetPointerInput()

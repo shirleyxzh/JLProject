@@ -26,14 +26,20 @@ public class Parallax : MonoBehaviour
         wallBottom,
         outline
     }
-    struct meshInfo
+    public struct meshInfo
     {
         public MeshFilter mesh;
         public MeshTypes meshType;
         public string meshTag;
+        public Parallax tileSet;
+        public bool isVisible => mesh.gameObject.activeSelf;
+        public void setVisible(bool visible) => mesh.gameObject.SetActive(visible);
+        public int HASHPOS(Vector2 pos) => ((Mathf.FloorToInt(pos.x) + 1000) + ((Mathf.FloorToInt(pos.y) - 1000) * -10000));
+        public int HASH => HASHPOS(mesh.transform.position);
+        public Vector2 REVHASH(int hash) { var d = Mathf.FloorToInt(hash / -10000);  var y = d + 1000; var x = hash - (((y - 1000) * -10000)) - 1000; return new Vector2(x, y); }
     };
 
-    private List<meshInfo> meshList = new List<meshInfo>();
+    public List<meshInfo> meshList { get; private set; } = new List<meshInfo>();
     private Dictionary<string, Vector3[]> vertList = new Dictionary<string, Vector3[]>();
 
     struct Blocker
@@ -45,6 +51,11 @@ public class Parallax : MonoBehaviour
     private List<Blocker> blockers = new List<Blocker>();
     
     private Connector isConnector;
+    private BoxCollider boxCollider;
+    private Vector3 defaultVector;
+    private Vector3 startVector;
+    private Vector3 lastVector;
+    private Vector3 endVector;
 
     private void Awake()
     {
@@ -59,17 +70,9 @@ public class Parallax : MonoBehaviour
             if (mesh.gameObject.layer != layer)
                 continue;
 
-            var tag = mesh.gameObject.tag;
-            var info = new meshInfo();
-            info.mesh = mesh;
-            info.meshTag = tag;
-            info.meshType = GetMeshType(mesh, tag);
-            meshList.Add(info);
+            var info = AddToMeshList(mesh);
 
-            if (!vertList.ContainsKey(tag))
-                vertList[tag] = mesh.sharedMesh.vertices;
-
-            if (!tag.Contains("outline"))
+            if (!info.meshTag.Contains("outline"))
             {
                 var pos = mesh.transform.position;
                 if (emptyBBox)
@@ -96,11 +99,35 @@ public class Parallax : MonoBehaviour
         }
         else
         {
-            // expand to fit cell and include camera Z
-            bbox.Expand(Vector3.forward * 100f);
+            // expand to fit cell
             bbox.Expand(Vector3.one);
         }
         bounds = bbox;
+        lastVector = Vector3.up;
+        defaultVector = lastVector;
+        boxCollider = GetComponent<BoxCollider>();
+    }
+
+    private meshInfo AddToMeshList(MeshFilter mesh)
+    {
+        var info = new meshInfo();
+        info.mesh = mesh;
+        info.tileSet = this;
+        info.meshTag = mesh.gameObject.tag;
+        info.meshType = GetMeshType(info.mesh, info.meshTag);
+        meshList.Add(info);
+
+        if (!vertList.ContainsKey(info.meshTag))
+            vertList[info.meshTag] = info.mesh.sharedMesh.vertices;
+
+        return info;
+    }
+
+    public bool isInside(Bounds gridBounds)
+    {
+        var bbox = boxCollider.bounds;
+        bbox.Expand(-Vector3.one * 0.1f);
+        return gridBounds.Contains(bbox.min) && gridBounds.Contains(bbox.max);
     }
 
     private MeshTypes GetMeshType(MeshFilter mesh, string tag)
@@ -187,8 +214,11 @@ public class Parallax : MonoBehaviour
         mf.mesh.RecalculateNormals();
     }
 
-    public void OnUpdate(Vector3 offset)
+    public void OnUpdate(float rotTimer, float wallHeight)
     {
+        var off = Vector3.Lerp(endVector, startVector, rotTimer) * wallHeight;
+        var offset = new Vector3(off.x, 0, off.y);
+
         if (ParallaxOff)
             offset = Vector3.zero;
 
@@ -203,6 +233,62 @@ public class Parallax : MonoBehaviour
         {
             var step = (Quaternion.Euler(blocker.pos.localEulerAngles) * offset) / blocker.pos.localScale.y;
             blocker.pos.localPosition = blocker.center + step;
+        }
+
+        if (rotTimer == 0)
+            startVector = endVector;
+    }
+
+    public void SetRot(int rotDir)
+    {
+        if (rotDir < 0)
+        {
+            // CW
+            if (lastVector == Vector3.up) endVector = Vector3.left;
+            else if (lastVector == Vector3.right) endVector = Vector3.up;
+            else if (lastVector == Vector3.left) endVector = Vector3.down;
+            else if (lastVector == Vector3.down) endVector = Vector3.right;
+           lastVector = endVector;
+        }
+        else if (rotDir > 0)
+        {
+            // CCW
+            if (lastVector == Vector3.up) endVector = Vector3.right;
+            else if (lastVector == Vector3.left) endVector = Vector3.up;
+            else if (lastVector == Vector3.down) endVector = Vector3.left;
+            else if (lastVector == Vector3.right) endVector = Vector3.down;
+           lastVector = endVector;
+        }
+    }
+
+    public void SetOff(bool isStartOff, Vector3 offset)
+    {
+        if (isStartOff)
+        {
+            startVector = offset;
+            endVector = lastVector;
+            defaultVector = lastVector;
+        }
+        else
+        {
+            endVector = offset;
+            lastVector = defaultVector;
+        }
+    }
+
+    public void SwapDoorFrame(meshInfo tile, MeshTypes frame, GameObject nitches)
+    {
+        var meshes = nitches.GetComponentsInChildren<MeshFilter>();
+        foreach (var mesh in meshes)
+        {
+            if (GetMeshType(mesh, "nitch") == frame)
+            {
+                var frameMesh = Instantiate(mesh, this.transform);
+                frameMesh.transform.position = tile.mesh.transform.position;
+                AddToMeshList(frameMesh);
+                tile.setVisible(false);
+                break;
+            }
         }
     }
 }

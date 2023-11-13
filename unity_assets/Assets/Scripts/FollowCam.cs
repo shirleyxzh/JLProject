@@ -4,12 +4,22 @@ using UnityEngine;
 
 public class FollowCam : MonoBehaviour
 {
-    public GameObject Player { get; set; }
-    
+    public GameObject Target { get; set; }
+    public bool SmoothFollow { get; set; } = false;
+
+    float smoothTime = 0.3f;
+    Vector3 velocity = Vector3.zero;
+
     private void LateUpdate()
     {
-        var newPos = Player.transform.position;
-        newPos.z = transform.position.z;
-        transform.position = newPos;
+        if (Target)
+        {
+            var newPos = Target.transform.position;
+            newPos.z = transform.position.z;
+            if (SmoothFollow)
+                transform.position = Vector3.SmoothDamp(transform.position, newPos, ref velocity, smoothTime);
+            else
+                transform.position = newPos;
+        }
     }
 }

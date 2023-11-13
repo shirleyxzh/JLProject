@@ -86,26 +86,20 @@ public class EnemyAI : MonoBehaviour
             canSeePlayer = !Physics.Linecast(thisEnemy.EyeLevel.position, playerPos, losMask);
         }
 
+        // TODO: don't collide with other enemies
         if (canSeePlayer)
         {
             lastSeenValid = true;
             lastSeenPosition = playerPos;
+            thisEnemy.PointerInput = lastSeenPosition;
+            var canAttack = dist <= attackDist && passedTime >= attackDelay;
+            thisEnemy.PerformAttack(canAttack);
+            if (canAttack)
+                passedTime = 0;
 
-            thisEnemy.PointerInput = playerPos;
-            if (dist <= attackDist)
-            {
-                // attack player
-                thisEnemy.OnMovementInput(Vector2.zero);
-                if (passedTime >= attackDelay)
-                {
-                    passedTime = 0;
-                    thisEnemy.PerformAttack(true);
-                }
-            }
-            else
+            if (dist > attackDist / 2f)
             {
                 // chasing player
-                thisEnemy.PerformAttack(false);
                 Vector2 dir = playerPos - enemyPos;
                 thisEnemy.OnMovementInput(dir.normalized);
             }

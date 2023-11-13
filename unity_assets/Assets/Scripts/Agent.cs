@@ -26,19 +26,22 @@ public class Agent : MonoBehaviour
 
     private WeaponParent weaponParent;
 
-    private int playerHits;
     private int playerHP;
+    private int playerHits;
+    private bool levelActive;
     public int GetHP { get => playerHP; }
     public Vector3 GetPostion { get => transform.position; }
+    private bool agentActive => playerHP > 0 && levelActive;
+    public bool actionsAllowed => !(agentAnimations.isRolling || pushBackTimer > 0);
 
-    private float pushBackTimer;
     private Vector3 pushBackDir;
+    private float pushBackTimer;
 
     public void PerformAttack(bool AttackStarted) 
     {
-        if (playerHP > 0)
+        if (agentActive)
         {
-            var canAttack = AttackStarted && ActionsAllowed();
+            var canAttack = AttackStarted && actionsAllowed;
             agentAnimations.PlayAttack(canAttack);
             weaponParent.PerformAnAttack(canAttack);
         }
@@ -46,35 +49,47 @@ public class Agent : MonoBehaviour
 
     public void PeformRoll()
     {
-        if (playerHP > 0 && ActionsAllowed())
+        if (agentActive && actionsAllowed)
             agentAnimations.PlayRoll();
     }
-    private bool ActionsAllowed()
-    {
-        return !(agentAnimations.isRolling || pushBackTimer > 0);
-    }
+
     private void Awake()
     {
-        playerHits = 0;
-        pushBackTimer = 0;
-        playerHP = StartingHP;
-
         agentMover = GetComponent<AgentMover>();
         agentAnimations = GetComponent<AgentAnimations>();
         weaponParent = GetComponentInChildren<WeaponParent>();
 
+        playerHits = 0;
+        levelActive = false;
+        playerHP = StartingHP;
         agentAnimations.eyeLevel = EyeLevel;
     }
 
-    private void Start()
+    public void StartLevel()
     {
+        pushBackTimer = 0;
+        levelActive = true;
         agentAnimations.PlayAnimation(Vector2.zero);        // start idle
         agentAnimations.RotateToPointer(Vector2.right);     // start looking right
     }
 
+    public void EndLevel()
+    {
+        levelActive = false;
+        agentAnimations.PlayAnimation(Vector2.zero);        // start idle
+        agentMover.MovementInput(Vector3.zero);
+        weaponParent.PerformAnAttack(false);
+    }
+
+    public void SetupForSelection(Vector3 lookDir)
+    {
+        agentAnimations.PlayAnimation(Vector2.zero);
+        agentAnimations.RotateToPointer(EyeLevel.position + lookDir);
+    }
+
     public void OnMovementInput(Vector3 movementInput)
     {
-        if (playerHP > 0)
+        if (agentActive)
         {
             var moveDir = movementInput;
             if (pushBackTimer > 0)

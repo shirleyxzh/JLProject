@@ -6,10 +6,20 @@ using UnityEngine.InputSystem;
 public class CursorMgr : MonoBehaviour
 {
     public Texture2D cursor;
+    private Vector2 hotspot;
 
     void Start()
     {
-        var hotspot = new Vector2(cursor.width / 2, cursor.height / 2);
+        hotspot = new Vector2(cursor.width / 2, cursor.height / 2);
+    }
+
+    public void SetDefault()
+    {
+        Cursor.SetCursor(null, Vector3.zero, CursorMode.Auto);
+    }
+
+    public void SetTargeting()
+    {
         Cursor.SetCursor(cursor, hotspot, CursorMode.Auto);
     }
 

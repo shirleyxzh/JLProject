@@ -6,60 +6,51 @@ using UnityEngine;
 public class PlayerSpawner : MonoBehaviour
 {
     [SerializeField]
-    private GameObject PlayerPrefab;
+    private TextMeshProUGUI hud;    // TODO: move to mgr class
 
     [SerializeField]
-    private Transform spawnPoint;
+    private TextMeshProUGUI hudKills;   // TODO: move to mgr class
 
     [SerializeField]
-    private TextMeshProUGUI hud;
+    private GridMgr gridMgr;        // TODO: move to mgr class
 
-    [SerializeField]
-    private TextMeshProUGUI hudKills;
+    private Agent agent;
+    private PlayerInput pi;
+    public Agent Player => agent;
 
-    [SerializeField]
-    private FollowCam Camera;
-
-    [SerializeField]
-    private GridMgr gridMgr;
-
-    public Agent agent { get; private set; }
-
-    private void Awake()
+    public GameObject CreateAvatar(GameObject avatar, Vector3 pos, Vector3 lookDir)
     {
-        var obj = Instantiate(PlayerPrefab);
-        var pos = spawnPoint.position + Vector3.back;
-        obj.transform.position = pos;
+        var obj = Instantiate(avatar, pos, Quaternion.identity);
+        obj.GetComponent<Agent>().SetupForSelection(lookDir);
+        return obj;
+    }
 
-        Camera.Player = obj;
-
-        agent = obj.GetComponent<Agent>();
-        var pi = agent.GetComponent<PlayerInput>();
+    public void InitPlayer(GameObject player, GameObject spawnPoint)
+    {
+        agent = player.GetComponent<Agent>();
+        pi = agent.GetComponent<PlayerInput>();
         pi.KillsCB.AddListener(EnemiesKilled);
         pi.DeathCB.AddListener(PlayerDied);
         pi.RotRoomCB.AddListener(RotRoom);
         pi.HitCB.AddListener(PlayerHUD);
-
-        pi.gridProxy = gridMgr.CreateProxy(pos);
+        
+        var pos = spawnPoint.transform.position + Vector3.back;
         agent.destProxy = gridMgr.CreateProxy(pos);
+        pi.gridProxy = gridMgr.CreateProxy(pos);
+        agent.transform.position = pos;
     }
 
-    private void Start()
+    public void StartLevel()
     {
         EnemiesKilled(0);
         PlayerHUD(0, agent.GetHP);
+
+        pi.StartLevel();
     }
 
-    void Update()
+    public void EndLevel()
     {
-        if (Input.GetKey("escape"))
-        {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif 
-        }
+        agent.GetComponent<PlayerInput>().EndLevel();
     }
 
     void PlayerDied()
@@ -73,11 +64,12 @@ public class PlayerSpawner : MonoBehaviour
 
     void EnemiesKilled(int kills)
     {
+        // TODO: move to Tetriria class and add total
         hudKills.text = $"Kills: {kills}";
     }
 
     void RotRoom(bool rotCW)
     {
-        gridMgr.Rotate(rotCW, agent.GetPostion);
+        gridMgr.StepRotate(rotCW, agent.GetPostion);
     }
 }
