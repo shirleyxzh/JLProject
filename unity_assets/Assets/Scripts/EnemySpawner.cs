@@ -16,48 +16,49 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField]
     ParticleSystem explosionParticleSystem;
 
-    [SerializeField]
-    private GridMgr gridMgr;
-
-    private Agent agent;
     private int killed;
-    private int spawned;
     private float spawnTimer;
     private int spawnPointIdx;
     private Agent playerAgent;
     private PlayerInput playerInput;
+    private PlayerSpawner playerSpawner;
+    public List<EnemyAI> enemiesSpawned = new List<EnemyAI>();
 
-    private bool disbaleSpawner = true;
+    private bool disableSpawner = true;
+
+    // debug
+    private bool oneshotModeOn = false;
 
     public void StartLevel(GameObject player)
     {
         killed = 0;
-        spawned = 0;
-        spawnTimer = Random.Range(1f, 2f);
+        spawnTimer = 1f;
+        enemiesSpawned.Clear();
         spawnPointIdx = Random.Range(0, spawnPoints.Count);
         playerAgent = player.GetComponent<Agent>();
         playerInput = playerAgent.GetComponent<PlayerInput>();
+        playerSpawner = gameObject.GetComponent<PlayerSpawner>();
 
-        disbaleSpawner = spawnPoints.Count == 0;
+        disableSpawner = spawnPoints.Count == 0;
     }
 
     public void EndLevel()
     {
-        disbaleSpawner = true;
+        disableSpawner = true;
     }
 
     private void Update()
     {
-        if (disbaleSpawner)
+        if (disableSpawner)
             return;
 
-        if (spawned < TotolToSpawn)
+        if (enemiesSpawned.Count < TotolToSpawn)
         {
             spawnTimer -= Time.deltaTime;
             if (spawnTimer <= 0)
             {
                 SpawnEnemy();
-                spawnTimer = Random.Range(2f, 5f);
+                spawnTimer = Random.Range(0.25f, 0.5f);
             }
         }
     }
@@ -66,22 +67,24 @@ public class EnemySpawner : MonoBehaviour
     {
         var mask = LayerMask.GetMask("enemy", "player");
         var pos = spawnPoints[spawnPointIdx++ % spawnPoints.Count].transform.position + Vector3.back;
-        var spaceTaken = Physics.CheckSphere(pos, 1f, mask);
+        var spaceTaken = Physics.CheckSphere(pos, 0.25f, mask);
         if (!spaceTaken)
         {
             var obj = Instantiate(EnemyPrefab, pos, Quaternion.identity);
-            agent = obj.GetComponent<Agent>();
             var enemy = obj.GetComponent<EnemyAI>();
+            var agent = obj.GetComponent<Agent>();
+
+            agent.OneShotKill = oneshotModeOn;
             enemy.explosionParticleSystem = explosionParticleSystem;
             enemy.player = playerAgent;
             enemy.DeathCB.AddListener(EnemyDied);
             enemy.HitCB.AddListener(EnemyHit);
 
-            enemy.gridProxy = gridMgr.CreateProxy(pos);     // for enemy movement
-            agent.destProxy = gridMgr.CreateProxy(pos);     // for pushback collisions
+            enemy.gridProxy = playerSpawner.GridMgr.CreateProxy(pos);     // for enemy movement
+            agent.destProxy = playerSpawner.GridMgr.CreateProxy(pos);     // for pushback collisions
 
             agent.StartLevel();
-            spawned++;
+            enemiesSpawned.Add(enemy);
         }
     }
 
@@ -93,5 +96,33 @@ public class EnemySpawner : MonoBehaviour
 
     void EnemyHit(int hits, int hp)
     {
+    }
+
+    public void ForceEnd()
+    {
+        if (disableSpawner)
+            return;
+
+        // remove all the enemies to force a level end
+        foreach (var enemy in enemiesSpawned)
+        {
+            if (enemy != null)
+                enemy.DebugRemove();
+        }
+        TotolToSpawn = 0;
+    }
+
+    public void ToggleOneShotKill()
+    {
+        if (disableSpawner)
+            return;
+
+        oneshotModeOn = !oneshotModeOn;
+        foreach (var enemy in enemiesSpawned)
+        {
+            if (enemy != null)
+                enemy.GetComponent<Agent>().OneShotKill = oneshotModeOn;
+        }
+        playerSpawner.SetOneShot(oneshotModeOn); 
     }
 }

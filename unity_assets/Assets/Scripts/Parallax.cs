@@ -196,7 +196,7 @@ public class Parallax : MonoBehaviour
         
         var _t = (-off + 1f) / 2f;
         var center = Mathf.Lerp(ac, bc, _t);
-        var extents = Mathf.Lerp(ae, be, _t); ;
+        var extents = Mathf.Lerp(ae, be, _t);
         return (pos - center) / extents;
     }
 

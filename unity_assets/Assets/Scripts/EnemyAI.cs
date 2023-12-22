@@ -31,14 +31,18 @@ public class EnemyAI : MonoBehaviour
     private Agent thisEnemy;
     private Vector3 lastSeenPosition;
     private bool lastSeenValid = false;
+    private bool onPatrol = false;
+    private float patrolTimer;
 
     private int losMask;
+    private int patrolMask;
 
     private void Start()
     {
         thisEnemy = GetComponent<Agent>();
         thisEnemy.OnAttacked.AddListener(WasAttacked);
         losMask = LayerMask.GetMask("blocker");
+        patrolMask = LayerMask.GetMask("enemy", "blocker");
     }
     private void Update()
     {
@@ -89,6 +93,7 @@ public class EnemyAI : MonoBehaviour
         // TODO: don't collide with other enemies
         if (canSeePlayer)
         {
+            onPatrol = false;
             lastSeenValid = true;
             lastSeenPosition = playerPos;
             thisEnemy.PointerInput = lastSeenPosition;
@@ -104,20 +109,31 @@ public class EnemyAI : MonoBehaviour
                 thisEnemy.OnMovementInput(dir.normalized);
             }
         }
-        else if (lastSeenValid)
+        else if (lastSeenValid || onPatrol)
         {
             // move close to last known pos
             thisEnemy.PerformAttack(false);
-            Vector2 dir = lastSeenPosition - enemyPos;
+            var dir = lastSeenPosition - enemyPos;
             thisEnemy.OnMovementInput(dir.normalized);
+            //Debug.DrawRay(enemyPos, dir, Color.white);
 
             dist = Vector2.Distance(lastSeenPosition, enemyPos);
-            lastSeenValid = dist > attackDist / 3;
+            if (lastSeenValid) lastSeenValid = dist > attackDist / 3;
+            if (onPatrol)
+            {
+                patrolTimer -= Time.deltaTime;
+                onPatrol = patrolTimer > 0;
+            }
         }
         else
         {
+            // pick a random point in the room and walk to it
             thisEnemy.PerformAttack(false);
             thisEnemy.OnMovementInput(Vector2.zero);
+
+            lastSeenPosition = enemyPos + Vector3.left * Random.Range(-1f, 1f) + Vector3.up * Random.Range(-1f, 1f);
+            onPatrol = !Physics.Linecast(enemyPos, lastSeenPosition, patrolMask);
+            patrolTimer = 2f;
         }
 
         if (passedTime < attackDelay)
@@ -133,6 +149,16 @@ public class EnemyAI : MonoBehaviour
         {
             isDead = true;
             DeathCB?.Invoke();
+            thisEnemy.PerformAttack(false);
+            thisEnemy.OnMovementInput(Vector2.zero);
+        }
+    }
+
+    public void DebugRemove()
+    {
+        if (!isDead)
+        {
+            isDead = true;
             thisEnemy.PerformAttack(false);
             thisEnemy.OnMovementInput(Vector2.zero);
         }

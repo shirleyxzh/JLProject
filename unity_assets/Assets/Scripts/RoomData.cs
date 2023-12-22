@@ -15,6 +15,7 @@ public class RoomData : MonoBehaviour
         L2_Shape
     }
 
+    [SerializeField] private int MaxSpawnPerSpot = 10;
     [SerializeField] private GameObject Filter;
     [SerializeField] private GameObject SpawnPoints;
     [SerializeField] private Parallax Tiles;
@@ -27,6 +28,11 @@ public class RoomData : MonoBehaviour
 
     private Color validColor = new Color(0, 1, 0, 0.1f);
     private Color invalidColor = new Color(1, 0, 0, 0.1f);
+
+    public RoomTypes GetRoomType()
+    {
+        return roomType;
+    }
 
     public bool IsType(RoomTypes inRoomType)
     {
@@ -57,6 +63,11 @@ public class RoomData : MonoBehaviour
         Outline.gameObject.SetActive(enable);
     }
 
+    public GameObject GetFilter()
+    {
+        return Filter;
+    }
+
     public void UpdateFilter(bool isValid)
     {
         var color = isValid ? validColor : invalidColor;
@@ -71,5 +82,15 @@ public class RoomData : MonoBehaviour
         transform.RotateAround(transform.position, Vector3.forward, 90 * rotDir);
         Outline.SetRot(rotDir);
         Tiles.SetRot(rotDir);
+    }
+
+    public void HideSpawnPoints()
+    {
+        SpawnPoints.SetActive(false);
+    }
+
+    public int GetMaxSpawnPerSpot()
+    {
+        return MaxSpawnPerSpot; 
     }
 }

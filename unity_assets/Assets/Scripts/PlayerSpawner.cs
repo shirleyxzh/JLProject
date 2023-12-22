@@ -17,6 +17,10 @@ public class PlayerSpawner : MonoBehaviour
     private Agent agent;
     private PlayerInput pi;
     public Agent Player => agent;
+    public GridMgr GridMgr => gridMgr;
+
+    // debug
+    private bool godModeOn = false;
 
     public GameObject CreateAvatar(GameObject avatar, Vector3 pos, Vector3 lookDir)
     {
@@ -50,7 +54,7 @@ public class PlayerSpawner : MonoBehaviour
 
     public void EndLevel()
     {
-        agent.GetComponent<PlayerInput>().EndLevel();
+        pi.EndLevel();
     }
 
     void PlayerDied()
@@ -71,5 +75,20 @@ public class PlayerSpawner : MonoBehaviour
     void RotRoom(bool rotCW)
     {
         gridMgr.StepRotate(rotCW, agent.GetPostion);
+    }
+
+    public void ToggleGodMode()
+    {
+        if (agent != null)
+        {
+            godModeOn = !godModeOn;
+            agent.GodMode = godModeOn;
+            hud.color = godModeOn ? Color.yellow : Color.white;
+        }
+    }
+
+    public void SetOneShot(bool enabled)
+    {
+        hudKills.color = enabled ? Color.red : Color.white;
     }
 }

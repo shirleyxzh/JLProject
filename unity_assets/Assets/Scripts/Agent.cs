@@ -36,6 +36,10 @@ public class Agent : MonoBehaviour
 
     private Vector3 pushBackDir;
     private float pushBackTimer;
+    private Vector3 rollDir;
+
+    public bool GodMode { set; get; } = false;
+    public bool OneShotKill { set; get; } = false;
 
     public void PerformAttack(bool AttackStarted) 
     {
@@ -50,7 +54,10 @@ public class Agent : MonoBehaviour
     public void PeformRoll()
     {
         if (agentActive && actionsAllowed)
+        {
             agentAnimations.PlayRoll();
+            rollDir = pointerInput.x > transform.position.x ? Vector3.right : Vector3.left;
+        }
     }
 
     private void Awake()
@@ -91,7 +98,7 @@ public class Agent : MonoBehaviour
     {
         if (agentActive)
         {
-            var moveDir = movementInput;
+            var moveDir = agentAnimations.isRolling ? rollDir : movementInput;
             if (pushBackTimer > 0)
             {
                 pushBackTimer = Mathf.Clamp01(pushBackTimer - Time.deltaTime);
@@ -99,14 +106,11 @@ public class Agent : MonoBehaviour
                 //Debug.DrawRay(transform.position, pushBackDir, Color.white);
                 moveDir = pushBackDir;
             }
-            else if (agentAnimations.isRolling)
-            {
-                moveDir.x = pointerInput.x > transform.position.x ? 1 : -1;
-            }
             agentMover.MovementInput(moveDir);
             weaponParent.PointerPosition = pointerInput;
 
-            agentAnimations.RotateToPointer(pointerInput);
+            if (!agentAnimations.isRolling)
+                agentAnimations.RotateToPointer(pointerInput);
             agentAnimations.PlayAnimation(moveDir);
         }
         else if (pushBackTimer > 0)
@@ -123,16 +127,20 @@ public class Agent : MonoBehaviour
         {
             if (playerHP > 0 && !agentAnimations.isRolling)
             {
-                playerHits++;
                 var bullet = other.GetComponent<Bullet>();
-                playerHP = Mathf.Max(playerHP - bullet.damage, 0);
-                OnAttacked?.Invoke(playerHits, playerHP);
                 bullet.RemoveWithVFX(AttackPoint.position);
-                if (playerHP == 0)
+
+                if (!GodMode)
                 {
-                    agentMover.MovementInput(Vector3.zero);
-                    weaponParent.PerformAnAttack(false);
-                    agentAnimations.PlayDead();
+                    playerHits++;
+                    playerHP = OneShotKill ? 0 : Mathf.Max(playerHP - bullet.damage, 0);
+                    OnAttacked?.Invoke(playerHits, playerHP);
+                    if (playerHP == 0)
+                    {
+                        agentMover.MovementInput(Vector3.zero);
+                        weaponParent.PerformAnAttack(false);
+                        agentAnimations.PlayDead();
+                    }
                 }
             }
         }

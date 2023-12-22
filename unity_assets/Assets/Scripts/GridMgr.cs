@@ -7,8 +7,10 @@ public class GridMgr : MonoBehaviour
     public Vector3 gridDim = Vector3.zero;
 
     public float wallHeight = 1f;
+    public float rotateTime = 1f;
     public GameObject backdrop;
     public GameObject nitches;
+    public GameObject roomSequence;
 
     private Parallax[] sections;
 
@@ -57,12 +59,12 @@ public class GridMgr : MonoBehaviour
     {
         if (rotTimer > 0)
         {
-            var rotStep = rotAmount * Time.deltaTime;
+            var rotStep = rotAmount / rotateTime * Time.deltaTime;
             transform.RotateAround(pivotPoint, Vector3.forward, rotStep);
 
-            rotTimer = Mathf.Clamp01(rotTimer - Time.deltaTime);
+            rotTimer = Mathf.Clamp(rotTimer - Time.deltaTime, 0, rotateTime);
             foreach (var s in sections)
-                s.OnUpdate(rotTimer, wallHeight);
+                s.OnUpdate(rotTimer / rotateTime, wallHeight);
 
             if (rotTimer == 0)
             {
@@ -97,7 +99,7 @@ public class GridMgr : MonoBehaviour
         foreach (var s in sections)
             s.SetRot(rotDir);
 
-        rotTimer = 1f;
+        rotTimer = rotateTime;
     }
 
     public Transform CreateProxy(Vector3 pos)
@@ -182,17 +184,22 @@ public class GridMgr : MonoBehaviour
         foreach (var s in sections)
             s.SetOff(true, Vector3.zero);
 
+        roomSequence.SetActive(false);
         pivotPoint = startPos;
+        rotTimer = rotateTime;
         endRot = startRot;
         endPos = startPos;
         rotAmount = 0f;
-        rotTimer = 1f;
         rotAccum = 0;
     }
 
     public IEnumerator EndLevel(Agent player)
     {
         yield return new WaitForSeconds(2);
+
+        // hide the spawn points
+        foreach (var room in roomsOnGrid)
+            room.HideSpawnPoints();
 
         // rotate back to start position
         pivotPoint = player.GetPostion;
@@ -203,10 +210,37 @@ public class GridMgr : MonoBehaviour
 
         endRot = startRot;
         endPos = startPos;
-        rotTimer = 1f;
+        rotTimer = rotateTime;
 
         yield return new WaitUntil(() => rotTimer == 0 && player.actionsAllowed);
         yield return null;
+    }
+
+    public void ShowRoomSequence(List<RoomData.RoomTypes> roomOrder, int roomIdx, RoomData[] rooms)
+    {
+        // delete current seq
+        roomSequence.SetActive(true);
+        foreach (Transform child in roomSequence.transform)
+            Destroy(child.gameObject);
+
+        var iconPosition = Vector3.zero;
+        for (int i = roomIdx + 3; i > roomIdx; i--)
+        {
+            var roomType = roomOrder[i];
+            foreach (var room in rooms)
+            {
+                if (room.IsType(roomType))
+                {
+                    var obj = room.GetFilter();
+                    var icon = Instantiate(obj.gameObject, roomSequence.transform);
+                    icon.transform.localPosition = iconPosition;
+                    icon.transform.localScale = Vector3.one;
+                    iconPosition += Vector3.forward * 20;
+                    icon.SetActive(true);
+                    break;
+                }
+            }
+        }
     }
 
     public bool PlaceRoomOnGrid(RoomData room)
