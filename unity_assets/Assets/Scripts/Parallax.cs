@@ -51,7 +51,7 @@ public class Parallax : MonoBehaviour
     private List<Blocker> blockers = new List<Blocker>();
     
     private Connector isConnector;
-    private BoxCollider boxCollider;
+    public BoxCollider boxCollider { get; private set; }
     private Vector3 defaultVector;
     private Vector3 startVector;
     private Vector3 lastVector;
@@ -121,13 +121,6 @@ public class Parallax : MonoBehaviour
             vertList[info.meshTag] = info.mesh.sharedMesh.vertices;
 
         return info;
-    }
-
-    public bool isInside(Bounds gridBounds)
-    {
-        var bbox = boxCollider.bounds;
-        bbox.Expand(-Vector3.one * 0.1f);
-        return gridBounds.Contains(bbox.min) && gridBounds.Contains(bbox.max);
     }
 
     private MeshTypes GetMeshType(MeshFilter mesh, string tag)
@@ -239,7 +232,7 @@ public class Parallax : MonoBehaviour
             startVector = endVector;
     }
 
-    public void SetRot(int rotDir)
+    public void SetRotVector(int rotDir)
     {
         if (rotDir < 0)
         {

@@ -61,7 +61,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3363580356900782180}
   - {fileID: 839052893476397293}
   - {fileID: 6519803392020601910}
   - {fileID: 7860962650924890936}
@@ -79,7 +78,7 @@ GameObject:
   - component: {fileID: 839052893476397293}
   - component: {fileID: 5515768797006290357}
   m_Layer: 0
-  m_Name: EnemySpawn1
+  m_Name: EnemySpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -163,6 +162,7 @@ GameObject:
   - component: {fileID: 5587651963834730278}
   - component: {fileID: 4679577091676924756}
   - component: {fileID: 6879244075979774965}
+  - component: {fileID: 4708769915425738437}
   m_Layer: 0
   m_Name: Quad
   m_TagString: Untagged
@@ -235,6 +235,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &4708769915425738437
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2045652406764627349}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.0000005, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3574991092254224460
 GameObject:
   m_ObjectHideFlags: 0
@@ -456,7 +477,7 @@ GameObject:
   - component: {fileID: 6519803392020601910}
   - component: {fileID: 1674222574391593561}
   m_Layer: 0
-  m_Name: EnemySpawn2
+  m_Name: EnemySpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -540,7 +561,7 @@ GameObject:
   - component: {fileID: 4062916059927638327}
   - component: {fileID: 5469819102241666968}
   m_Layer: 0
-  m_Name: EnemySpawn4
+  m_Name: EnemySpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -613,37 +634,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &4868157589493718208
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3363580356900782180}
-  m_Layer: 0
-  m_Name: PlayerSpawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3363580356900782180
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4868157589493718208}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7095340055373156303}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7650418497987416654
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,7 +712,7 @@ GameObject:
   - component: {fileID: 7860962650924890936}
   - component: {fileID: 1010507938498325533}
   m_Layer: 0
-  m_Name: EnemySpawn3
+  m_Name: EnemySpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

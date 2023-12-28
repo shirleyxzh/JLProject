@@ -1,16 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridMgr : MonoBehaviour
 {
+    public enum IconTypes
+    {
+        Mark,
+        Start,
+        Target,
+        Mystery,
+        Chest,
+        Salvage,
+        Key,
+    }
+
+    [System.Serializable]
+    public struct IconInfo
+    {
+        public IconTypes iconType;
+        public GameObject iconSprite;
+    }
+
     public Vector3 gridDim = Vector3.zero;
 
     public float wallHeight = 1f;
     public float rotateTime = 1f;
     public GameObject backdrop;
+    public GameObject gridMarks;
     public GameObject nitches;
-    public GameObject roomSequence;
+    public GameObject roomQue;
+    [Space(10)]
+    public GameObject gridIconsBase;
+    public IconInfo[] gridIcons;
 
     private Parallax[] sections;
 
@@ -34,6 +58,8 @@ public class GridMgr : MonoBehaviour
 
     private static Parallax.meshInfo emptyTile = new Parallax.meshInfo();
 
+    private Dictionary<IconTypes, GameObject> iconsList = new Dictionary<IconTypes, GameObject>();
+
     private Parallax.MeshTypes[][] doorFrames = {
         new Parallax.MeshTypes[] { Parallax.MeshTypes.nitchUR, Parallax.MeshTypes.nitchUL, Parallax.MeshTypes.nitchLR, Parallax.MeshTypes.nitchLL },
         new Parallax.MeshTypes[] { Parallax.MeshTypes.nitchLR, Parallax.MeshTypes.nitchUR, Parallax.MeshTypes.nitchLL, Parallax.MeshTypes.nitchUL },
@@ -46,13 +72,73 @@ public class GridMgr : MonoBehaviour
         startPos = transform.position;
         startRot = transform.rotation;
     }
+
     private void Start()
     {
-        rotTimer = 0;
-        backdrop.SetActive(false);
-
-        gridBounds.size = gridDim;
+        gridBounds.size = gridDim * 4;
         gridBounds.center = startPos;
+
+        var mark = GetIconSprite(IconTypes.Mark);
+        var halfx = Mathf.FloorToInt(gridBounds.size.x / 2);
+        var halfy = Mathf.FloorToInt(gridBounds.size.y / 2);
+        for (int x = -halfx; x <= halfx; x += 4)
+        {
+            for (int y = -halfy; y <= halfy; y += 4)
+            {
+                var obj = Instantiate(mark, gridMarks.transform, true);
+                obj.transform.position = new Vector3(x, y, 0);
+            }
+        }
+        
+        ResetLevel(true);
+    }
+
+    private GameObject GetIconSprite(IconTypes iconType)
+    {
+        foreach (var icon in gridIcons)
+        {
+            if (icon.iconType == iconType)
+                return icon.iconSprite;
+        }
+        return gridIcons[0].iconSprite;
+    }
+
+    private Vector3 GetIconCell(int minDist)
+    {
+        minDist *= 4;
+        var posOk = false;
+        var pos = Vector3.zero;
+        while (!posOk)
+        {
+            int x = Random.Range(0, (int)gridDim.x);
+            int y = Random.Range(0, (int)gridDim.y);
+            // ignore corner cells
+            posOk = !(x == 0 || x == gridDim.x - 1) && !(y == 0 || y == gridDim.y - 1);
+            if (posOk)
+            {
+                // make sure no other icons are within the min dist
+                pos.x = ((x * 4) - (gridBounds.size.x / 2)) + 2;
+                pos.y = ((y * 4) - (gridBounds.size.y / 2)) + 2;
+                foreach (var cell in iconsList)
+                {
+                    if (Mathf.Abs(pos.x - cell.Value.transform.position.x) < minDist
+                        && Mathf.Abs(pos.y - cell.Value.transform.position.y) < minDist)
+                    {
+                        posOk = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return pos;
+    }
+
+    private GameObject CreateIcon(IconTypes iconType, Vector3 pos)
+    {
+        var icon = GetIconSprite(iconType);
+        var obj = Instantiate(icon, gridIconsBase.transform, true);
+        obj.transform.position = pos;
+        return obj;
     }
 
     private void Update()
@@ -97,7 +183,7 @@ public class GridMgr : MonoBehaviour
         transform.position = savedPos;
 
         foreach (var s in sections)
-            s.SetRot(rotDir);
+            s.SetRotVector(rotDir);
 
         rotTimer = rotateTime;
     }
@@ -110,15 +196,21 @@ public class GridMgr : MonoBehaviour
         return proxy;
     }
 
-    public void AddRoom(RoomData newRoom, GameObject player)
+    public void AddRoom(RoomData newRoom)
     {
-        // add new room to the grid
+        doorGroups.Clear();
+        roomsOnGrid.Add(newRoom);
+        newRoom.EnableOutline(false);
+    }
+
+    public void AttachRoom(RoomData newRoom, GameObject player)
+    {
+        // attach new room to the grid
         foreach (var tile in newRoom.GetTiles)
             tilesOnGrid[tile.HASH] = tile;
 
         // update the outline
         outlineOnGrid.Clear();
-        roomsOnGrid.Add(newRoom);
         foreach (var room in roomsOnGrid)
         {
             room.EnableOutline(true);
@@ -184,7 +276,7 @@ public class GridMgr : MonoBehaviour
         foreach (var s in sections)
             s.SetOff(true, Vector3.zero);
 
-        roomSequence.SetActive(false);
+        roomQue.SetActive(false);
         pivotPoint = startPos;
         rotTimer = rotateTime;
         endRot = startRot;
@@ -214,25 +306,31 @@ public class GridMgr : MonoBehaviour
 
         yield return new WaitUntil(() => rotTimer == 0 && player.actionsAllowed);
         yield return null;
+
+        foreach (var room in roomsOnGrid)
+            room.EnableOutline(false);
     }
 
     public void ShowRoomSequence(List<RoomData.RoomTypes> roomOrder, int roomIdx, RoomData[] rooms)
     {
         // delete current seq
-        roomSequence.SetActive(true);
-        foreach (Transform child in roomSequence.transform)
+        roomQue.SetActive(true);
+        foreach (Transform child in roomQue.transform)
             Destroy(child.gameObject);
 
         var iconPosition = Vector3.zero;
-        for (int i = roomIdx + 3; i > roomIdx; i--)
+        for (int i = roomIdx; i < roomIdx + 4; i++)
         {
+            if (i >= roomOrder.Count)
+                continue;
+
             var roomType = roomOrder[i];
             foreach (var room in rooms)
             {
                 if (room.IsType(roomType))
                 {
                     var obj = room.GetFilter();
-                    var icon = Instantiate(obj.gameObject, roomSequence.transform);
+                    var icon = Instantiate(obj.gameObject, roomQue.transform);
                     icon.transform.localPosition = iconPosition;
                     icon.transform.localScale = Vector3.one;
                     iconPosition += Vector3.forward * 20;
@@ -243,21 +341,34 @@ public class GridMgr : MonoBehaviour
         }
     }
 
-    public bool PlaceRoomOnGrid(RoomData room)
+    public bool RoomHasTarget(RoomData room)
     {
+        return room.ContainsIcon(iconsList[IconTypes.Target]);
+    }
+
+    public bool PlaceRoomOnGrid(RoomData room, Vector3 pos, int rotDir)
+    {
+        room.MoveAndRot(pos, rotDir, gridBounds);
+
         var valid = false;
         if (room.IsOnGrid(gridBounds))
         {
+            // reject if an enemy spawn point is over a grid icon
+            if (room.IsBlockedByIcon(gridIconsBase))
+                return false;
+
             if (tilesOnGrid.Count == 0)
-                return true;
+            {
+                // first room must be over the start icon
+                return room.ContainsIcon(iconsList[IconTypes.Start]);
+            }
 
             doorWalls.Clear();
             var tiles = room.GetTiles;
             foreach (var tile in tiles)
             {
                 // check for overlapping tiles
-                var pos = tile.HASH;
-                if (tilesOnGrid.ContainsKey(pos))
+                if (tilesOnGrid.ContainsKey(tile.HASH))
                     return false;
 
                 // check for door wall pairs
@@ -277,6 +388,11 @@ public class GridMgr : MonoBehaviour
             }
         }
         return valid;
+    }
+
+    public GameObject GetStartPoint()
+    {
+        return iconsList[IconTypes.Start];
     }
 
     private void BuildGroups()
@@ -357,5 +473,37 @@ public class GridMgr : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void ResetLevel(bool clearAll)
+    {
+        rotTimer = 0;
+        backdrop.SetActive(false);
+        
+        transform.position = startPos;
+        transform.rotation = startRot;
+
+        foreach (var room in roomsOnGrid)
+            Destroy(room.gameObject);
+
+        tilesOnGrid.Clear();
+        roomsOnGrid.Clear();
+
+        if (clearAll)
+        {
+            foreach (var cell in iconsList)
+                Destroy(cell.Value);
+
+            iconsList.Clear();
+            iconsList[IconTypes.Start] = CreateIcon(IconTypes.Start, GetIconCell(0));
+            iconsList[IconTypes.Target] = CreateIcon(IconTypes.Target, GetIconCell(4));
+            iconsList[IconTypes.Mystery] = CreateIcon(IconTypes.Mystery, GetIconCell(2));
+            iconsList[IconTypes.Salvage] = CreateIcon(IconTypes.Salvage, GetIconCell(2));
+            iconsList[IconTypes.Chest] = CreateIcon(IconTypes.Chest, GetIconCell(2));
+            iconsList[IconTypes.Key] = CreateIcon(IconTypes.Key, GetIconCell(2));
+        }
+
+        foreach (var cell in iconsList)
+            cell.Value.SetActive(true);
     }
 }

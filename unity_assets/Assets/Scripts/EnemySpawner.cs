@@ -42,9 +42,18 @@ public class EnemySpawner : MonoBehaviour
         disableSpawner = spawnPoints.Count == 0;
     }
 
-    public void EndLevel()
+    public void EndLevel(bool removeAll)
     {
         disableSpawner = true;
+        // remove all the enemies
+        if (removeAll)
+        {
+            foreach (var enemy in enemiesSpawned)
+            {
+                if (enemy != null)
+                    enemy.DestoryEnemy(true);
+            }
+        }
     }
 
     private void Update()

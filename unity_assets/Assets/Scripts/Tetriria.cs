@@ -4,20 +4,27 @@ using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.GraphicsBuffer;
 
 public class Tetriria : MonoBehaviour
 {
+    [SerializeField] private GameObject LogoScreen;
+    [SerializeField] private GameObject StartScreen;
     [Space(10)]
     [SerializeField] private GridMgr grid;
     [SerializeField] private GameObject hudPanel;
     [SerializeField] private GameObject helpPanel;
     [SerializeField] private GameObject debugPanel;
+    [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject blockerPrefab;
     [Space(10)]
     [SerializeField] private InputActionReference pointerClick, pointerPosition, rotFilterCW, rotFilterCCW;
     [Space(10)]
     [SerializeField] private GameObject[] playerPrefabs;
     [SerializeField] private RoomData[] rooms;
+
+    private Camera mainCamera;
+    private Camera blurCamera;
 
     private PlayerSpawner playerSpawn;
     private EnemySpawner enemySpawn;
@@ -31,12 +38,21 @@ public class Tetriria : MonoBehaviour
     private GameObject playerSpawnPoint;
     private GameObject blockerBase;
     private bool waitForRelease;
+    private bool startPressed;
+    private bool gamePaused;
+    private bool gameInProgress;
+    private Coroutine gameLoop;
 
     private static float WALL_THICKNESS = 0.6f;
     private static float SECTION_LENGTH = 1f + WALL_THICKNESS;
 
     private UnityEngine.InputSystem.PlayerInput inputMaps;
+    private List<RoomData.RoomTypes> roomOrder = new List<RoomData.RoomTypes>();
     private int rotRoomDir = 0;
+
+    private bool pointerClicked => pointerClick.action.ReadValue<float>() > 0;
+    private Vector2 pointerPos => pointerPosition.action.ReadValue<Vector2>();
+    private bool playerActive => gameInProgress && pickedPlayer.activeSelf;
 
     // 90 degrees
     Dictionary<Parallax.MeshTypes, Parallax.MeshTypes> rot90 = new Dictionary<Parallax.MeshTypes, Parallax.MeshTypes>
@@ -77,19 +93,35 @@ public class Tetriria : MonoBehaviour
 
     void Awake()
     {
+        mainCamera = Camera.main;
+        blurCamera = mainCamera.transform.GetChild(0).GetComponent<Camera>();
+
+        pickedPlayer = null;
         cursorMgr = GetComponent<CursorMgr>();
         enemySpawn = GetComponent<EnemySpawner>();
         playerSpawn = GetComponent<PlayerSpawner>();
-        followCam = Camera.main.GetComponent<FollowCam>();
+        followCam = mainCamera.GetComponent<FollowCam>();
         inputMaps = GetComponent<UnityEngine.InputSystem.PlayerInput>();
         UnityEngine.Random.InitState(System.DateTime.Now.Millisecond);
     }
 
-    private void Start()
+    IEnumerator Start()
     {
-        hudPanel.SetActive(false);
-        helpPanel.SetActive(false);
-        StartCoroutine(GameLoop());
+        pausePanel.SetActive(false);
+
+        // show Logo screen
+        LogoScreen.SetActive(true);
+        var endTime = Time.time + 2f;
+        yield return new WaitUntil(() => endTime < Time.time || pointerClicked);
+
+        // show Start screen - wait for button
+        startPressed = false;
+        LogoScreen.SetActive(false);
+        StartScreen.SetActive(true);
+        inputMaps.SwitchCurrentActionMap("UI");
+        yield return new WaitUntil(() => startPressed);
+        
+        gameLoop = StartCoroutine(GameLoop());
     }
 
     private void OnEnable()
@@ -98,61 +130,75 @@ public class Tetriria : MonoBehaviour
         rotFilterCCW.action.started += ctx => rotRoomDir = 1;
     }
 
+    public void StartPressed()
+    {
+        startPressed = true;
+    }
+
     IEnumerator GameLoop()
     {
-        // pick player avatar
+        gamePaused = false;
+        hudPanel.SetActive(false);
+        helpPanel.SetActive(false);
+        pausePanel.SetActive(false);
+        LogoScreen.SetActive(false);
+        StartScreen.SetActive(false);
         inputMaps.SwitchCurrentActionMap("UI");
-        yield return StartCoroutine(PickPlayer());
+
+        // pick player avatar
+        if (pickedPlayer == null)
+        {
+            yield return StartCoroutine(PickPlayer());
+        }
 
         // play thru all the rooms
         int roomIdx = 0;
-        var roomOrder = GetRoomList();
+        if (roomOrder.Count == 0)
+            roomOrder = GetRoomList();
         while (roomIdx < roomOrder.Count)
         {
+            gameInProgress = true;
             cursorMgr.SetDefault();
             followCam.Target = null;
             hudPanel.SetActive(false);
             grid.backdrop.SetActive(true);
-            yield return StartCoroutine(SetCamera(grid.gameObject, ZOOMED_OUT));
-
-            // display room order on screen
             grid.ShowRoomSequence(roomOrder, roomIdx, rooms);
+            yield return StartCoroutine(SetCamera(grid.gameObject, ZOOMED_OUT));
 
             // spawn the room
             var room = CreateRoom(roomOrder[roomIdx]);
-            room.EnableOutline(false);
             GetSpawnPoints(room);
+            grid.AddRoom(room);
 
             // wait to position room on grid
-            helpPanel.SetActive(true);
             room.EnableFilter(true);
             bool placed = false;
             while (!placed)
             {
-                if (waitForRelease)
+                helpPanel.SetActive(!gamePaused);
+                if (waitForRelease || gamePaused)
                 {
-                    waitForRelease = pointerClick.action.ReadValue<float>() > 0;
+                    waitForRelease = pointerClicked;
                 }
                 else
                 {
-                    var pos = Camera.main.ScreenToWorldPoint(pointerPosition.action.ReadValue<Vector2>());
-                    room.MoveAndRot(pos, rotRoomDir);
-                    var isValid = grid.PlaceRoomOnGrid(room);
+                    var pos = mainCamera.ScreenToWorldPoint(pointerPos);
+                    var isValid = grid.PlaceRoomOnGrid(room, pos, rotRoomDir);
                     room.UpdateFilter(isValid);
                     rotRoomDir = 0;
 
-                    placed = isValid && pointerClick.action.ReadValue<float>() > 0;
+                    placed = isValid && pointerClicked;
                 }
                 yield return null;
             }
             room.EnableFilter(false);
-            grid.AddRoom(room, pickedPlayer);
+            grid.AttachRoom(room, pickedPlayer);
             CreateBlockers();
 
             // spawn player in room
             if (playerSpawnPoint == null)
             {
-                room.GetSpawnPoint("PlayerSpawn", out playerSpawnPoint);
+                playerSpawnPoint = grid.GetStartPoint();
                 playerSpawn.InitPlayer(pickedPlayer, playerSpawnPoint);
             }
 
@@ -174,32 +220,42 @@ public class Tetriria : MonoBehaviour
             yield return new WaitWhile(() => enemySpawn.EnemiesLeft);
 
             // close out the level
-            enemySpawn.EndLevel();
-            playerSpawn.EndLevel();
+            enemySpawn.EndLevel(false);
+            playerSpawn.EndLevel(false);
             followCam.SmoothFollow = false;
             inputMaps.SwitchCurrentActionMap("UI");
             yield return grid.EndLevel(playerSpawn.Player);
 
-            foreach (var rm in grid.roomsOnGrid)
-                rm.EnableOutline(false);
+            // TODO: end the game if we completed the boss level
+
+            // TODO: load the boss room next if we cleared the target level
+            while (grid.RoomHasTarget(room))
+                yield return null;
 
             roomIdx++;
-            if (roomIdx >= roomOrder.Count)
-                roomIdx = 0;
         }
     }
 
     void Update()
     {
-        if (Input.GetKey("escape"))
+        // test to exit game
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif 
+            PauseExit();
+            return;
         }
 
+        // ignore keys until player picked
+        if (!gameInProgress)
+            return;
+
+        // test to toggle pause
+        if (Input.GetKeyDown(KeyCode.Escape))
+            TogglePause();
+        if (gamePaused)
+            return;
+
+        // test debug keys
         if (Input.GetKeyDown(KeyCode.F1))
         {
             debugPanel.SetActive(true);
@@ -231,24 +287,11 @@ public class Tetriria : MonoBehaviour
 
     private void GetSpawnPoints(RoomData room)
     {
-        enemySpawn.spawnPoints.Clear();
-        var found = true;
-        int num = 1;
-        while (found)
-        {
-            GameObject point;
-            found = room.GetSpawnPoint($"EnemySpawn{num++}", out point);
-            if (found)
-            {
-                enemySpawn.spawnPoints.Add(point);
-                enemySpawn.TotolToSpawn++;
-            }
-        }
-
         // randomly pick 2 to use
+        enemySpawn.spawnPoints = room.GetSpawnPoints();
         while (enemySpawn.spawnPoints.Count > 2)
         {
-            num = UnityEngine.Random.Range(0, enemySpawn.spawnPoints.Count);
+            var num = UnityEngine.Random.Range(0, enemySpawn.spawnPoints.Count);
             var sp = enemySpawn.spawnPoints[num];
             enemySpawn.spawnPoints.Remove(sp);
             sp.SetActive(false);
@@ -259,7 +302,8 @@ public class Tetriria : MonoBehaviour
 
     IEnumerator PickPlayer()
     {
-        Camera.main.orthographicSize = 1;
+        mainCamera.orthographicSize = 1;
+        blurCamera.orthographicSize = mainCamera.orthographicSize;
 
         var p1 = playerSpawn.CreateAvatar(playerPrefabs[0], new Vector3(-0.5f, -0.3f, 0), Vector3.right);
         var p2 = playerSpawn.CreateAvatar(playerPrefabs[1], new Vector3(0.5f, -0.3f, 0), Vector3.left);
@@ -268,28 +312,29 @@ public class Tetriria : MonoBehaviour
         var p2BBox = p2.GetComponent<BoxCollider>().bounds;
 
         pickedPlayer = null;
-        while (pickedPlayer == null) 
+        while (pickedPlayer == null)
         {
-            var pos = Camera.main.ScreenToWorldPoint(pointerPosition.action.ReadValue<Vector2>());
+            var pos = mainCamera.ScreenToWorldPoint(pointerPos);
             pos.z = 0;
             var inP1 = p1BBox.Contains(pos);
             var inP2 = p2BBox.Contains(pos);
             if (inP1 || inP2) cursorMgr.SetTargeting();
-            else              cursorMgr.SetDefault();
+            else cursorMgr.SetDefault();
 
-            if (pointerClick.action.ReadValue<float>() > 0)
+            if (pointerClicked)
             {
                 if (inP1) pickedPlayer = p1;
                 if (inP2) pickedPlayer = p2;
             }
-            
+
             yield return null;
         }
 
         if (pickedPlayer == p1) Destroy(p2);
         if (pickedPlayer == p2) Destroy(p1);
 
-        Camera.main.orthographicSize = ZOOMED_OUT - 5;
+        mainCamera.orthographicSize = ZOOMED_OUT - 5;
+        blurCamera.orthographicSize = mainCamera.orthographicSize;
         pickedPlayer.SetActive(false);
         waitForRelease = true;
     }
@@ -297,16 +342,17 @@ public class Tetriria : MonoBehaviour
     IEnumerator SetCamera(GameObject target, float endSize)
     {
         var _t = 0f;
-        var startSize = Camera.main.orthographicSize;
-        var startPos = Camera.main.transform.position;
+        var startSize = mainCamera.orthographicSize;
+        var startPos = mainCamera.transform.position;
         var endPos = target.transform.position;
         endPos.z = startPos.z;
         while (_t < grid.rotateTime)
         {
             _t += Time.deltaTime;
             var _t2 = Mathf.Clamp01(_t / grid.rotateTime);
-            Camera.main.orthographicSize = Mathf.Lerp(startSize, endSize, _t2);
-            Camera.main.transform.position = Vector3.Lerp(startPos, endPos, _t2);
+            mainCamera.orthographicSize = Mathf.Lerp(startSize, endSize, _t2);
+            mainCamera.transform.position = Vector3.Lerp(startPos, endPos, _t2);
+            blurCamera.orthographicSize = mainCamera.orthographicSize;
             yield return null;
         }
     }
@@ -429,9 +475,8 @@ public class Tetriria : MonoBehaviour
 
     private List<RoomData.RoomTypes> GetRoomList()
     {
-        // scramble rooms - put square first
+        // scramble rooms
         var rdl = new List<RoomData.RoomTypes>();
-        rdl.Add(RoomData.RoomTypes.Square);
         while (rdl.Count < 50)
         {
             var match = false;
@@ -443,5 +488,65 @@ public class Tetriria : MonoBehaviour
                 rdl.Add(id);
         }
         return rdl;
+    }
+
+    private void TogglePause()
+    {
+        gamePaused = !gamePaused;
+        pausePanel.SetActive(gamePaused);
+        Time.timeScale = gamePaused ? 0 : 1;
+        if (gamePaused)
+            cursorMgr.SetDefault();
+        else if (playerActive)
+            cursorMgr.SetTargeting();
+    }
+
+    public void PauseResume()
+    {
+        TogglePause();
+    }
+
+    public void PauseRestart(bool NewGame)
+    {
+        // flush the level and restart the game loop
+        StopCoroutine(gameLoop);
+        
+        enemySpawn.EndLevel(true);
+        playerSpawn.EndLevel(NewGame);
+        grid.ResetLevel(NewGame);
+
+        playerSpawnPoint = null;
+        gameInProgress = false;
+
+        if (NewGame)
+        {
+            roomOrder.Clear();
+            Destroy(pickedPlayer);
+            pickedPlayer = null;
+        }
+        else
+        {
+            pickedPlayer.SetActive(false);
+        }
+
+        followCam.SmoothFollow = false;
+        mainCamera.orthographicSize = ZOOMED_OUT;
+        blurCamera.orthographicSize = mainCamera.orthographicSize;
+        mainCamera.transform.position = new Vector3(grid.transform.position.x, grid.transform.position.y, mainCamera.transform.position.z);
+
+        gamePaused = false;
+        pausePanel.SetActive(false);
+        Time.timeScale = 1;
+        
+        gameLoop = StartCoroutine(GameLoop());
+    }
+
+    public void PauseExit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif 
     }
 }

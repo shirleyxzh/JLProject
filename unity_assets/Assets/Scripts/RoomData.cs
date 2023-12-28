@@ -39,22 +39,59 @@ public class RoomData : MonoBehaviour
         return roomType == inRoomType;
     }
 
-    public bool GetSpawnPoint(string name, out GameObject point)
+    public List<GameObject> GetSpawnPoints()
     {
-        point = null;
-        var obj = SpawnPoints.transform.Find(name);
-        if (obj)
-            point = obj.gameObject;
-        return obj != null;
+        var spawns = new List<GameObject>();
+        foreach (Transform point in SpawnPoints.transform)
+        {
+            spawns.Add(point.gameObject);
+            point.gameObject.SetActive(true);
+        }
+        return spawns;
     }
 
-    public bool IsOnGrid(Bounds bounds)
+    public bool IsOnGrid(Bounds gridBounds)
     {
-        return Tiles.isInside(bounds);
+        var bbox = Tiles.boxCollider.bounds;
+        bbox.Expand(-0.1f);
+        if (!(gridBounds.Contains(bbox.min) && gridBounds.Contains(bbox.max)))
+            return false;
+
+        // bbox must be on multiple of 4 boundry
+        return (Mathf.RoundToInt(Mathf.Abs(bbox.min.x)) % 4) == 0
+                && (Mathf.RoundToInt(Mathf.Abs(bbox.min.y)) % 4) == 0;
+    }
+
+    public bool IsBlockedByIcon(GameObject gridIcons)
+    {
+        foreach (Transform spawn in SpawnPoints.transform)
+        {
+            foreach (Transform child in gridIcons.transform)
+            {
+                if ((Mathf.Abs(child.position.x - spawn.position.x) < 0.001f)
+                    && (Mathf.Abs(child.position.y - spawn.position.y) < 0.001f))
+                {
+                    return spawn.gameObject.activeSelf;
+                }
+            }
+        }
+        return false;
+    }
+
+    public bool ContainsIcon(GameObject gridIcon)
+    {
+        var quads = Filter.GetComponentsInChildren<BoxCollider>(true);
+        foreach (var quad in quads)
+        {
+            if (quad.bounds.Contains(gridIcon.transform.position))
+                return true;
+        }
+        return false;
     }
 
     public void EnableFilter(bool enable)
     {
+        SetFilterColor(Color.clear);
         Filter.SetActive(enable);
     }
 
@@ -71,17 +108,26 @@ public class RoomData : MonoBehaviour
     public void UpdateFilter(bool isValid)
     {
         var color = isValid ? validColor : invalidColor;
+        SetFilterColor(color);
+    }
+
+    private void SetFilterColor(Color color)
+    {
         var rends = Filter.GetComponentsInChildren<Renderer>();
         foreach (var rend in rends)
             rend.material.SetColor("_Color", color);
     }
 
-    public void MoveAndRot(Vector3 pos, int rotDir)
+    public void MoveAndRot(Vector3 newPos, int rotDir, Bounds gridBounds)
     {
-        transform.position = new Vector3(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), 0);
+        // TODO: keep room on multiple of 4 boundry
+
+        transform.position = new Vector3(Mathf.RoundToInt(newPos.x), Mathf.RoundToInt(newPos.y), 0);
         transform.RotateAround(transform.position, Vector3.forward, 90 * rotDir);
-        Outline.SetRot(rotDir);
-        Tiles.SetRot(rotDir);
+        Outline.SetRotVector(rotDir);
+        Tiles.SetRotVector(rotDir);
+
+        // TODO: keep room within grid bounds
     }
 
     public void HideSpawnPoints()

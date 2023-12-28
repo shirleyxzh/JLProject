@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 848986452198742273}
   - component: {fileID: 6402620679403205266}
   m_Layer: 0
-  m_Name: EnemySpawn1
+  m_Name: EnemySpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -128,6 +128,7 @@ GameObject:
   - component: {fileID: 9172283494259201000}
   - component: {fileID: 7181647701225770251}
   - component: {fileID: 7606352254050570009}
+  - component: {fileID: 1561718533560067769}
   m_Layer: 0
   m_Name: Quad2
   m_TagString: Untagged
@@ -200,6 +201,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &1561718533560067769
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2458951056445485997}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.0000005, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2677029892648243214
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,6 +233,7 @@ GameObject:
   - component: {fileID: 2968948246726441050}
   - component: {fileID: 5969426980460410498}
   - component: {fileID: 3307991940693361643}
+  - component: {fileID: 1736371006702650818}
   m_Layer: 0
   m_Name: Quad1
   m_TagString: Untagged
@@ -283,6 +306,27 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &1736371006702650818
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2677029892648243214}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.0000005, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3782450854270515594
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,7 +356,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8738685872108039211}
   - {fileID: 848986452198742273}
   - {fileID: 4816289346643229475}
   - {fileID: 3110013152490485837}
@@ -460,7 +503,7 @@ GameObject:
   - component: {fileID: 4816289346643229475}
   - component: {fileID: 5220605687995284356}
   m_Layer: 0
-  m_Name: EnemySpawn2
+  m_Name: EnemySpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -533,37 +576,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &6013387298996914030
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8738685872108039211}
-  m_Layer: 0
-  m_Name: PlayerSpawn
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8738685872108039211
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6013387298996914030}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3860693573089485698}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6136177626325484318
 GameObject:
   m_ObjectHideFlags: 0
@@ -730,7 +742,7 @@ GameObject:
   - component: {fileID: 2189974262599174544}
   - component: {fileID: 3657360063194893278}
   m_Layer: 0
-  m_Name: EnemySpawn4
+  m_Name: EnemySpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -814,7 +826,7 @@ GameObject:
   - component: {fileID: 3110013152490485837}
   - component: {fileID: 1507609929990117971}
   m_Layer: 0
-  m_Name: EnemySpawn3
+  m_Name: EnemySpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

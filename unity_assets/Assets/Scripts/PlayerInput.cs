@@ -75,9 +75,14 @@ public class PlayerInput : MonoBehaviour
         thisPlayer.StartLevel();
     }
 
-    public void EndLevel()
+    public void EndLevel(bool clearProxy)
     {
         thisPlayer.EndLevel();
+        if (clearProxy)
+        {
+            ready = false;
+            Destroy(gridProxy.gameObject);
+        }
     }
 
     private Vector2 GetPointerInput()

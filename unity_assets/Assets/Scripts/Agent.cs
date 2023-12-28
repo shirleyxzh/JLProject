@@ -96,33 +96,37 @@ public class Agent : MonoBehaviour
 
     public void OnMovementInput(Vector3 movementInput)
     {
+        var pushedBack = pushBackTimer > 0;
         if (agentActive)
         {
             var moveDir = agentAnimations.isRolling ? rollDir : movementInput;
-            if (pushBackTimer > 0)
+            if (pushedBack)
             {
                 pushBackTimer = Mathf.Clamp01(pushBackTimer - Time.deltaTime);
                 pushBackDir = (destProxy.position - transform.position).normalized;
                 //Debug.DrawRay(transform.position, pushBackDir, Color.white);
                 moveDir = pushBackDir;
             }
-            agentMover.MovementInput(moveDir);
+            agentMover.MovementInput(moveDir, pushedBack);
             weaponParent.PointerPosition = pointerInput;
 
             if (!agentAnimations.isRolling)
                 agentAnimations.RotateToPointer(pointerInput);
             agentAnimations.PlayAnimation(moveDir);
         }
-        else if (pushBackTimer > 0)
+        else if (pushedBack)
         {
             pushBackDir = (destProxy.position - transform.position).normalized;
             pushBackTimer = Mathf.Clamp01(pushBackTimer - Time.deltaTime);
-            agentMover.MovementInput(pushBackDir);
+            agentMover.MovementInput(pushBackDir, pushedBack);
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!levelActive)
+            return;
+
         if (other.CompareTag(CanAttackByType))
         {
             if (playerHP > 0 && !agentAnimations.isRolling)

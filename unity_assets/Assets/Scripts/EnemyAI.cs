@@ -66,9 +66,7 @@ public class EnemyAI : MonoBehaviour
                         },
                         explosionParticleCount
                     );
-                    Destroy(thisEnemy.destProxy.gameObject);
-                    Destroy(gridProxy.gameObject);
-                    Destroy(gameObject);
+                    DestoryEnemy(false);
                 }
             }
             return;
@@ -102,18 +100,20 @@ public class EnemyAI : MonoBehaviour
             if (canAttack)
                 passedTime = 0;
 
+            var dir = Vector2.zero;
             if (dist > attackDist / 2f)
             {
                 // chasing player
-                Vector2 dir = playerPos - enemyPos;
-                thisEnemy.OnMovementInput(dir.normalized);
+                dir = (playerPos - enemyPos).normalized;
             }
+            thisEnemy.OnMovementInput(dir);
         }
         else if (lastSeenValid || onPatrol)
         {
             // move close to last known pos
             thisEnemy.PerformAttack(false);
             var dir = lastSeenPosition - enemyPos;
+            thisEnemy.PointerInput = lastSeenPosition;
             thisEnemy.OnMovementInput(dir.normalized);
             //Debug.DrawRay(enemyPos, dir, Color.white);
 
@@ -131,15 +131,32 @@ public class EnemyAI : MonoBehaviour
             thisEnemy.PerformAttack(false);
             thisEnemy.OnMovementInput(Vector2.zero);
 
-            lastSeenPosition = enemyPos + Vector3.left * Random.Range(-1f, 1f) + Vector3.up * Random.Range(-1f, 1f);
-            onPatrol = !Physics.Linecast(enemyPos, lastSeenPosition, patrolMask);
-            patrolTimer = 2f;
+            var dir = Vector3.left * (int)Random.Range(-1, 2) + Vector3.up * (int)Random.Range(-1, 2);
+            if (dir != Vector3.zero)
+            {
+                lastSeenPosition = enemyPos + dir;
+                if (!Physics.Linecast(enemyPos, lastSeenPosition, patrolMask))
+                {
+                    onPatrol = true;
+                    patrolTimer = 2f;
+                }
+            }
         }
 
         if (passedTime < attackDelay)
             passedTime += Time.deltaTime;
 
         gridProxy.position = transform.position;
+    }
+
+    public void DestoryEnemy(bool removeExplosion)
+    {
+        if (removeExplosion)
+            explosionParticleSystem.Stop(true);
+
+        Destroy(thisEnemy.destProxy.gameObject);
+        Destroy(gridProxy.gameObject);
+        Destroy(gameObject);
     }
 
     public void WasAttacked(int hits, int hp)

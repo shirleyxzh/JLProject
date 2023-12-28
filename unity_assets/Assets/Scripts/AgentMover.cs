@@ -24,7 +24,7 @@ public class AgentMover : MonoBehaviour
         testMask = LayerMask.GetMask("enemy", "blocker");
     }
 
-    public void MovementInput(Vector3 direction)
+    public void MovementInput(Vector3 direction, bool forcedMove = false)
     {
         var step = direction * maxSpeed * Time.deltaTime;
         var pos = transform.position;
@@ -37,7 +37,7 @@ public class AgentMover : MonoBehaviour
         var off2 = dir * (boxCol.bounds.size.x + dx);
         var p1 = step.x < 0 ? boxCol.bounds.min : boxCol.bounds.max;
         var p2 = step.x < 0 ? boxCol.bounds.max : boxCol.bounds.min;
-        if (testEdge(p1, p2, off1, off2))
+        if (!forcedMove && testEdge(p1, p2, off1, off2))
             newPos.x = pos.x;
 
         var dy = Mathf.Abs(step.y) + wallGap;
@@ -46,7 +46,7 @@ public class AgentMover : MonoBehaviour
         off2 = dir * (boxCol.bounds.size.y + dy);
         p1 = step.y < 0 ? boxCol.bounds.min : boxCol.bounds.max;
         p2 = step.y < 0 ? boxCol.bounds.max : boxCol.bounds.min;
-        if (testEdge(p1, p2, off1, off2))
+        if (!forcedMove && testEdge(p1, p2, off1, off2))
             newPos.y = pos.y;
 
         gameObject.layer = savedLayer;

@@ -52,9 +52,16 @@ public class PlayerSpawner : MonoBehaviour
         pi.StartLevel();
     }
 
-    public void EndLevel()
+    public void EndLevel(bool clearProxy)
     {
-        pi.EndLevel();
+        if (pi)
+        {
+            pi.EndLevel(clearProxy);
+            if (clearProxy)
+            {
+                Destroy(agent.destProxy.gameObject);
+            }
+        }
     }
 
     void PlayerDied()
